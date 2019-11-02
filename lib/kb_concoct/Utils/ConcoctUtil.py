@@ -155,7 +155,7 @@ class ConcoctUtil:
             assembly = self.get_contig_file(task_params['assembly_ref'])
 
         # remove spaces from fasta headers because that breaks bedtools
-        assembly_clean = os.path.basename(assembly).split('.fa')[0] + "_clean.fa"
+        assembly_clean = os.path.abspath(assembly).split('.fa')[0] + "_clean.fa"
 
         command = '/bin/bash reformat.sh in={} out={} addunderscore'.format(assembly,assembly_clean)
 
