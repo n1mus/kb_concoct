@@ -31,7 +31,7 @@
             "field_type" : "text",
             "text_options" : {
                 "valid_ws_types" : [ "KBaseMetagenomes.BinnedContigs" ],
-                "is_output_name" : false
+                "is_output_name" : true
             }
         },
         {
