@@ -230,9 +230,7 @@ class ConcoctUtil:
         command += ' && '
         command += 'python /kb/deployment/bin/CONCOCT/scripts/merge_cutup_clustering.py concoct_output_dir/clustering_gt{}.csv > concoct_output_dir/clustering_merged.csv'.format(params.get('min_contig_length'))
         command += ' && '
-        command += 'mkdir concoct_output_dir/final_bins'
-        command += ' && '
-        command += 'python /kb/deployment/bin/CONCOCT/scripts/extract_fasta_bins.py {} concoct_output_dir/clustering_merged.csv --output_path concoct_output_dir/final_bins'.format(params.get('contig_file_path'))
+        command += 'python /kb/deployment/bin/CONCOCT/scripts/extract_fasta_bins.py {} concoct_output_dir/clustering_merged.csv --output_path concoct_output_dir'.format(params.get('contig_file_path'))
 
 
         log('Generated run_concoct command: {}'.format(command))
