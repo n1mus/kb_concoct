@@ -46,14 +46,26 @@
             }
         },
         {
-            "id": "min_contig_length",
+          "id": "min_contig_length",
+          "optional": true,
+          "advanced": true,
+          "allow_multiple": false,
+          "default_values": [ 2500 ],
+          "field_type": "text",
+          "text_options": {
+              "min_int" : 1000,
+              "validate_as" : "int"
+            }
+        },
+        {
+            "id": "contig_split_size",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
-            "default_values": [ 2500 ],
+            "default_values": [ 10000 ],
             "field_type": "text",
             "text_options": {
-                "min_int" : 1000,
+                "min_int" : 5000,
                 "validate_as" : "int"
             }
         }
@@ -85,6 +97,10 @@
                 {
                     "input_parameter": "min_contig_length",
                     "target_property": "min_contig_length"
+                },
+                {
+                    "input_parameter": "contig_split_size",
+                    "target_property": "contig_split_size"
                 }
             ],
             "output_mapping": [

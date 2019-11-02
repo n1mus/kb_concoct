@@ -154,16 +154,15 @@ class ConcoctUtil:
             # we are on njsw so lets copy it over to scratch
             assembly = self.get_contig_file(task_params['assembly_ref'])
 
+        # remove spaces from fasta headers because that breaks bedtools
         assembly_clean = os.path.basename(assembly).split('.fa')[0] + "_clean.fa"
 
         command = '/bin/bash reformat.sh in={} out={} addunderscore'.format(assembly,assembly_clean)
-        print("Test PRINT statement")
 
         log('running reformat command: {}'.format(command))
         out,err = self.run_command(command)
 
-
-        min_contig_length = task_params['min_contig_length']
+        #min_contig_length = task_params['min_contig_length']
 
         fastq = read_scratch_path[0]
         result_directory = task_params['result_directory']
@@ -203,28 +202,19 @@ class ConcoctUtil:
         """
         print("\n\nRunning generate_concoct_command")
 
-        command = 'python /kb/deployment/bin/CONCOCT/scripts/cut_up_fasta.py {} -c 10000 -o 0 --merge_last -b temp.bed > {}/split_contigs.fa'.format(params.get('contig_file_path'),
-                                         params.get('result_directory'))
+        command = 'python /kb/deployment/bin/CONCOCT/scripts/cut_up_fasta.py {} -c {} -o 0 --merge_last -b temp.bed > concoct_output_dir/split_contigs.fa'.format(params.get('contig_file_path'),params.get('contig_split_size'))
         command += ' && '
-        command += 'python /kb/deployment/bin/CONCOCT/scripts/concoct_coverage_table.py temp.bed {}/*.sorted.bam > {}/coverage_table.tsv'.format(params.get('result_directory'),
-                                         params.get('result_directory'))
+        command += 'python /kb/deployment/bin/CONCOCT/scripts/concoct_coverage_table.py temp.bed concoct_output_dir/*.sorted.bam > concoct_output_dir/coverage_table.tsv'
         command += ' && '
-        command += '/kb/deployment/bin/CONCOCT/bin/concoct --composition_file {}/split_contigs.fa -l {} -b {} --coverage_file {}/coverage_table.tsv -t {}'.format(params.get('result_directory'),
-                                         params.get('min_contig_length'),
-                                         params.get('result_directory'),
-                                         params.get('result_directory'),
+        command += '/kb/deployment/bin/CONCOCT/bin/concoct --composition_file concoct_output_dir/split_contigs.fa -l {} -b concoct_output_dir --coverage_file concoct_output_dir/coverage_table.tsv -t {}'.format(params.get('min_contig_length'),
                                          self.BBMAP_THREADS)
 
         command += ' && '
-        command += 'python /kb/deployment/bin/CONCOCT/scripts/merge_cutup_clustering.py {}/clustering_gt{}.csv > {}/clustering_merged.csv'.format(params.get('result_directory'),
-                                         params.get('min_contig_length'),
-                                         params.get('result_directory'))
+        command += 'python /kb/deployment/bin/CONCOCT/scripts/merge_cutup_clustering.py concoct_output_dir/clustering_gt{}.csv > concoct_output_dir/clustering_merged.csv'.format(params.get('min_contig_length'))
         command += ' && '
-        command += 'mkdir {}/fasta_bins'.format(params.get('result_directory'))
+        command += 'mkdir concoct_output_dir/final_bins'
         command += ' && '
-        command += 'python /kb/deployment/bin/CONCOCT/scripts/extract_fasta_bins.py {} {}/clustering_merged.csv --output_path {}/fasta_bins'.format(params.get('contig_file_path'),
-                                         params.get('result_directory'),
-                                         params.get('result_directory'))
+        command += 'python /kb/deployment/bin/CONCOCT/scripts/extract_fasta_bins.py {} concoct_output_dir/clustering_merged.csv --output_path concoct_output_dir/final_bins'.format(params.get('contig_file_path'))
 
 
         log('Generated run_concoct command: {}'.format(command))
@@ -371,7 +361,7 @@ class ConcoctUtil:
 
         created_objects = []
         created_objects.append({"ref": binned_contig_obj_ref,
-                                "description": "BinnedContigs from MaxBin2"})
+                                "description": "BinnedContigs from CONCOCT"})
 
         report_params = {
               'message': '',
@@ -433,14 +423,7 @@ class ConcoctUtil:
         #run concoct
         command = self.generate_concoct_command(params)
 
-        print(os.listdir('./'))
-        print(os.listdir('./concoct_output_dir'))
-
         self.run_command(command)
-
-        # print(os.listdir('./'))
-        # print(os.listdir('./concoct_output_dir'))
-        # print(os.listdir('./concoct_output_dir/fasta_bins'))
 
         os.chdir(cwd)
         log('changing working dir to {}'.format(cwd))
@@ -454,6 +437,7 @@ class ConcoctUtil:
             'binned_contig_name': params.get('binned_contig_name'),
             'workspace_name': params.get('workspace_name')
         }
+
         binned_contig_obj_ref = self.mgu.file_to_binned_contigs(
                                     generate_binned_contig_param).get('binned_contig_obj_ref')
 
@@ -461,7 +445,7 @@ class ConcoctUtil:
 
         returnVal = {
             'result_directory': result_directory,
-             'binned_contig_obj_ref': binned_contig_obj_ref
+            'binned_contig_obj_ref': binned_contig_obj_ref
         }
 
         returnVal.update(reportVal)

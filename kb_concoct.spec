@@ -13,7 +13,7 @@ module kb_concoct {
     */
     typedef string obj_ref;
 
-    /*  
+    /*
         required params:
         assembly_ref: Genome assembly object reference
         binned_contig_name: BinnedContig object name and output file header
@@ -23,7 +23,7 @@ module kb_concoct {
         optional params:
         thread: number of threads; default 1
         min_contig_length: minimum contig length; default 1000
-        plotmarker: specify this option if you want to plot the markers in each contig
+        contig_split_length: length to split long contigs; default 10000
         ref: https://github.com/BinPro/CONCOCT
 
     */
@@ -35,6 +35,7 @@ module kb_concoct {
 
         int thread;
         int min_contig_length;
+        int contig_split_length;
     } ConcoctInputParams;
 
     /*

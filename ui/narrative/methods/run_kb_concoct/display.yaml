@@ -44,9 +44,14 @@ parameters :
         long-hint  : A list of reads object (PairedEndLibrary/SingleEndLibrary) upon which CONCOCT will be run
 
     min_contig_length :
-        ui-name : Minimum Contig Length (>1500)
-        short-hint : minimum contig length (default 2500)
+        ui-name : Minimum Contig Length (>1000bp)
+        short-hint : minimum contig length (default 2500bp)
         long-hint  : minimum contig length should not be less than 1500bp.
+
+    contig_split_size :
+        ui-name : Contig Split Size (>=10000)
+        short-hint : contig split size (default 5000bp)
+        long-hint  : split contigs longer than 10000bp into chunks of 10000bp during binning.
 
 description : |
     <p>CONCOCT clusters metagenomic contigs into different "bins", each of which should correspond to a putative genome.</p>
@@ -88,4 +93,3 @@ publications:
         display-text : |
             CONCOCT source:
         link: https://github.com/BinPro/CONCOCT
-

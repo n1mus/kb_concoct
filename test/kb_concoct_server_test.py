@@ -191,31 +191,31 @@ class kb_concoctTest(unittest.TestCase):
                     ValueError, '"reads_list" parameter is required, but missing'):
             self.getImpl().run_kb_concoct(self.getContext(), invalidate_input_params)
 
-    #
-    # def test_ConcoctUtil_generate_command(self):
-    #     method_name = 'test_ConcoctUtil_generate_command'
-    #     print ("\n=================================================================")
-    #     print ("RUNNING "+method_name+"()")
-    #     print ("=================================================================\n")
-    #
-    #     input_params = {
-    #         'contig_file_path': 'mycontig',
-    #         'min_contig_length': '3000',
-    #         'result_directory': 'concoct_results'
-    #     }
-    #
-    #     expect_command = 'python cut_up_fasta.py mycontig -c 10000 -o 0 --merge_last '
-    #     expect_command += '-b temp.bed > split_contigs.fa && python concoct_coverage_table.py '
-    #     expect_command += 'temp.bed *.sorted.bam > coverage_table.tsv && concoct '
-    #     expect_command += '--composition_file split_contigs.fa -l 3000 -b concoct_results '
-    #     expect_command += '--coverage_file coverage_table.tsv -t 16 && python '
-    #     expect_command += 'merge_cutup_clustering.py concoct_results/clustering_gt3000.csv '
-    #     expect_command += '> concoct_results/clustering_merged.csv && mkdir '
-    #     expect_command += 'concoct_results/fasta_bins && python extract_fasta_bins.py '
-    #     expect_command += 'mycontig concoct_results/clustering_merged.csv '
-    #     expect_command += '--output_path concoct_results/fasta_bins'
-    #     command = self.concoct_runner._generate_concoct_command(input_params)
-    #     self.assertEqual(command, expect_command)
+
+    def test_ConcoctUtil_generate_command(self):
+        method_name = 'test_ConcoctUtil_generate_command'
+        print ("\n=================================================================")
+        print ("RUNNING "+method_name+"()")
+        print ("=================================================================\n")
+
+        input_params = {
+            'contig_file_path': 'mycontig',
+            'min_contig_length': '3000',
+            'contig_split_size': '10000'
+        }
+
+        expect_command = 'python /kb/deployment/bin/CONCOCT/scripts/cut_up_fasta.py mycontig -c 10000 -o 0 --merge_last '
+        expect_command += '-b temp.bed > concoct_output_dir/split_contigs.fa && python /kb/deployment/bin/CONCOCT/scripts/concoct_coverage_table.py '
+        expect_command += 'temp.bed concoct_output_dir/*.sorted.bam > concoct_output_dir/coverage_table.tsv && /kb/deployment/bin/CONCOCT/bin/concoct '
+        expect_command += '--composition_file concoct_output_dir/split_contigs.fa -l 3000 -b concoct_output_dir '
+        expect_command += '--coverage_file concoct_output_dir/coverage_table.tsv -t 16 && python '
+        expect_command += '/kb/deployment/bin/CONCOCT/scripts/merge_cutup_clustering.py concoct_output_dir/clustering_gt3000.csv '
+        expect_command += '> concoct_output_dir/clustering_merged.csv && mkdir '
+        expect_command += 'concoct_output_dir/final_bins && python /kb/deployment/bin/CONCOCT/scripts/extract_fasta_bins.py '
+        expect_command += 'mycontig concoct_output_dir/clustering_merged.csv '
+        expect_command += '--output_path concoct_output_dir/final_bins'
+        command = self.concoct_runner.generate_concoct_command(input_params)
+        self.assertEqual(command, expect_command)
 
 
 
@@ -230,9 +230,13 @@ class kb_concoctTest(unittest.TestCase):
                                             {'workspace_name': self.getWsName(),
                                              'assembly_ref': self.assembly_ref,
                                              'min_contig_length': 3000,
-                                             'result_directory': 'concoct_output_dir',
+                                             'contig_split_size': 10000,
                                              'binned_contig_name': 'concoct_bin_obj',
                                              'reads_list': [self.int1_oldstyle_reads_ref, self.int2_oldstyle_reads_ref] })
+
+
+
+
 
 
 

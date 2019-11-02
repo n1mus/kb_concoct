@@ -35,7 +35,7 @@ class kb_concoct:
     # config contains contents of config file in a hash or None if it couldn't
     # be found
 
-    
+
     # def __init__(self, config):
     #     #BEGIN_CONSTRUCTOR
     #     self.callback_url = os.environ['SDK_CALLBACK_URL']
@@ -62,8 +62,7 @@ class kb_concoct:
            reads_list: list of reads object
            (PairedEndLibrary/SingleEndLibrary) upon which CONCOCT will be run
            optional params: thread: number of threads; default 1
-           min_contig_length: minimum contig length; default 1000 plotmarker:
-           specify this option if you want to plot the markers in each contig
+           min_contig_length: minimum contig length; default 1000
            ref: https://github.com/BinPro/CONCOCT) -> structure: parameter
            "assembly_ref" of type "obj_ref" (An X/Y/Z style reference),
            parameter "binned_contig_name" of String, parameter
