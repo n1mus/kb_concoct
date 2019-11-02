@@ -18,6 +18,8 @@ RUN git clone https://github.com/BinPro/CONCOCT && cd /CONCOCT && \
     cd .. && \
     cp -R CONCOCT /kb/deployment/bin/CONCOCT
 
+# Editing one of the CONCOCT utility scripts to give bins consistent names (instead of starting with a number)
+RUN sh -c "sed -i 's/{0}.fa/concoct-bin_{0}.000.fasta/' /kb/deployment/bin/CONCOCT/scripts/extract_fasta_bins.py"
 
 
 COPY ./ /kb/module
