@@ -154,7 +154,7 @@ class ConcoctUtil:
             # we are on njsw so lets copy it over to scratch
             assembly = self.get_contig_file(task_params['assembly_ref'])
 
-        assembly_clean = os.path.basename(assembly) + "_clean"
+        assembly_clean = os.path.basename(assembly).split('.fa')[0] + "_clean.fa"
 
         command = '/bin/bash reformat.sh in={} out={} addunderscore'.format(assembly,assembly_clean)
         print("Test PRINT statement")

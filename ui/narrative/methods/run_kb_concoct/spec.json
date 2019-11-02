@@ -62,7 +62,7 @@
         "service-mapping": {
             "url": "",
             "name": "kb_concoct",
-            "method": "run_con_coct",
+            "method": "run_kb_concoct",
             "input_mapping": [
                 {
                     "narrative_system_variable": "workspace",
