@@ -121,6 +121,24 @@ class ConcoctUtil:
 
         return contig_file
 
+    def retrieve_and_clean_assembly(self, task_params):
+        if os.path.exists(task_params['contig_file_path']):
+            assembly =  task_params['contig_file_path']
+            print("FOUND ASSEMBLY ON LOCAL SCRATCH")
+        else:
+            # we are on njsw so lets copy it over to scratch
+            assembly = self.get_contig_file(task_params['assembly_ref'])
+
+        # remove spaces from fasta headers because that breaks bedtools
+        assembly_clean = os.path.abspath(assembly).split('.fa')[0] + "_clean.fa"
+
+        command = '/bin/bash reformat.sh in={} out={} addunderscore'.format(assembly,assembly_clean)
+
+        log('running reformat command: {}'.format(command))
+        out,err = self.run_command(command)
+
+        return assembly_clean
+
 
     def generate_alignment_bams(self, task_params):
         """
@@ -147,22 +165,18 @@ class ConcoctUtil:
         # needs to be copied over to scratch if on njsw node (assuming we're running
         # jobs in parallel)
         #
-        if os.path.exists(task_params['contig_file_path']):
-            assembly =  task_params['contig_file_path']
-            print("FOUND ASSEMBLY ON LOCAL SCRATCH")
-        else:
-            # we are on njsw so lets copy it over to scratch
-            assembly = self.get_contig_file(task_params['assembly_ref'])
 
-        # remove spaces from fasta headers because that breaks bedtools
-        assembly_clean = os.path.abspath(assembly).split('.fa')[0] + "_clean.fa"
-
-        command = '/bin/bash reformat.sh in={} out={} addunderscore'.format(assembly,assembly_clean)
-
-        log('running reformat command: {}'.format(command))
-        out,err = self.run_command(command)
-
-        #min_contig_length = task_params['min_contig_length']
+        # if os.path.exists(task_params['contig_file_path']):
+        #     assembly =  task_params['contig_file_path']
+        #     print("FOUND ASSEMBLY ON LOCAL SCRATCH")
+        # else:
+        #     # we are on njsw so lets copy it over to scratch
+        #     assembly = self.get_contig_file(task_params['assembly_ref'])
+        #
+        # # remove spaces from fasta headers because that breaks bedtools
+        # assembly_clean = os.path.abspath(assembly).split('.fa')[0] + "_clean.fa"
+        #
+        assembly_clean = self.retrieve_and_clean_assembly(task_params)
 
         fastq = read_scratch_path[0]
         result_directory = task_params['result_directory']
@@ -171,7 +185,6 @@ class ConcoctUtil:
         sorted_bam = sam + '.sorted.bam'
 
         command = '/bin/bash bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} mappedonly nodisk overwrite'.format(self.BBMAP_MEM,self.BBMAP_THREADS,assembly_clean,fastq,sam)
-        print("Test PRINT statement")
 
         log('running alignment command: {}'.format(command))
         out,err = self.run_command(command)
@@ -195,11 +208,16 @@ class ConcoctUtil:
 
         log('running samtools command: {}'.format(command))
         self.run_command(command)
+        return assembly_clean
 
     def generate_concoct_command(self, params):
         """
         generate_command: generate concoct params
         """
+        # print("params" + str(params))
+        # params['contig_file_path'] = self.retrieve_and_clean_assembly(params)
+        # print("params" + str(params))
+
         print("\n\nRunning generate_concoct_command")
 
         command = 'python /kb/deployment/bin/CONCOCT/scripts/cut_up_fasta.py {} -c {} -o 0 --merge_last -b temp.bed > concoct_output_dir/split_contigs.fa'.format(params.get('contig_file_path'),params.get('contig_split_size'))
@@ -417,8 +435,8 @@ class ConcoctUtil:
         cwd = os.getcwd()
         log('changing working dir to {}'.format(result_directory))
         os.chdir(result_directory)
-        #run alignments
-        self.generate_alignment_bams(params)
+        #run alignments, and update input contigs to use the clean file
+        params['contig_file_path'] = self.generate_alignment_bams(params)
 
         #run concoct
         command = self.generate_concoct_command(params)

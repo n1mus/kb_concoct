@@ -49,7 +49,7 @@ parameters :
         long-hint  : minimum contig length should not be less than 1500bp.
 
     contig_split_size :
-        ui-name : Contig Split Size (>=10000)
+        ui-name : Contig Split Size (>=5000bp)
         short-hint : contig split size (default 5000bp)
         long-hint  : split contigs longer than 10000bp into chunks of 10000bp during binning.
 
