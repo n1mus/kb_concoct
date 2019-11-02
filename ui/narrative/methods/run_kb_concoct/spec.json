@@ -1,0 +1,123 @@
+{
+    "ver": "1.0.0",
+    "authors": [
+        "seanjungbluth"
+    ],
+    "contact": "help@kbase.us",
+    "visible" : true,
+    "categories": ["active","assembly","communities"],
+    "widgets": {
+        "input": "kbaseNarrativeMethodInput",
+        "output" : "kbaseBinnedContigs"
+    },
+    "parameters": [
+        {
+            "id": "assembly_ref",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types" : ["KBaseGenomes.ContigSet", "KBaseGenomeAnnotations.Assembly"]
+            }
+        },
+        {
+            "id": "binned_contig_name",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type" : "text",
+            "text_options" : {
+                "valid_ws_types" : [ "KBaseMetagenomes.BinnedContigs" ],
+                "is_output_name" : true
+            }
+        },
+        {
+            "id" : "reads_list",
+            "optional" : false,
+            "advanced" : false,
+            "allow_multiple" : true,
+            "default_values" : [ "" ],
+            "field_type" : "text",
+            "text_options" : {
+              "valid_ws_types" : ["KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary"]
+            }
+        },
+        {
+            "id": "min_contig_length",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ 2500 ],
+            "field_type": "text",
+            "text_options": {
+                "min_int" : 1000,
+                "validate_as" : "int"
+            }
+        }
+    ],
+    "behavior": {
+        "service-mapping": {
+            "url": "",
+            "name": "kb_concoct",
+            "method": "run_con_coct",
+            "input_mapping": [
+                {
+                    "narrative_system_variable": "workspace",
+                    "target_property": "workspace_name"
+                },
+                {
+                    "input_parameter": "assembly_ref",
+                    "target_type_transform": "resolved-ref",
+                    "target_property": "assembly_ref"
+                },
+                {
+                    "input_parameter": "binned_contig_name",
+                    "target_property": "binned_contig_name"
+                },
+                {
+                    "input_parameter": "reads_list",
+                    "target_type_transform": "list<ref>",
+                    "target_property": "reads_list"
+                },
+                {
+                    "input_parameter": "min_contig_length",
+                    "target_property": "min_contig_length"
+                }
+            ],
+            "output_mapping": [
+                {
+                    "narrative_system_variable": "workspace",
+                    "target_property": "wsName"
+                },
+                {
+                    "service_method_output_path": [0, "result_directory"],
+                    "target_property": "result_directory"
+                },
+                {
+                    "service_method_output_path": [0,"binned_contig_obj_ref"],
+                    "target_property": "binned_contig_obj_ref"
+                },
+                {
+                    "service_method_output_path": [0,"binned_contig_obj_ref"],
+                    "target_property": "objRef"
+                },
+                {
+                    "service_method_output_path": [0, "report_name"],
+                    "target_property": "report_name"
+                },
+                {
+                    "service_method_output_path": [0, "report_ref"],
+                    "target_property": "report_ref"
+                },
+                {
+                    "constant_value": "16",
+                    "target_property": "report_window_line_height"
+                }
+            ]
+        }
+    },
+    "job_id_output_field": "docker"
+}
