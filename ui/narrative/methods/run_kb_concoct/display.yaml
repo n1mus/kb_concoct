@@ -1,7 +1,7 @@
 #
 # define display information
 #
-name     : Bin Contigs using CONCOCT - v1.0
+name     : Bin Contigs using CONCOCT - v1.1
 subtitle : Group assembled metagenomic contigs into lineages (Bins) using depth-of-coverage and nucleotide composition
 tooltip  : Groups metagenomic contigs into genome bins using depth-of-coverage and nucleotide composition
 
