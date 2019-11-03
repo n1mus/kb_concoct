@@ -1,11 +1,11 @@
-2019-11-03 00:09:47,570:INFO:root:Results created at /kb/module/work/tmp/concoct_output_dir
-2019-11-03 00:09:48,526:INFO:root:Successfully loaded composition data.
-2019-11-03 00:09:48,558:INFO:root:Successfully loaded coverage data.
-2019-11-03 00:09:48,610:INFO:root:Performed PCA, resulted in 2 dimensions
-2019-11-03 00:09:48,784:INFO:root:Wrote original filtered data file.
-2019-11-03 00:09:48,795:INFO:root:Wrote PCA transformed file.
-2019-11-03 00:09:48,802:INFO:root:Wrote PCA components file.
-2019-11-03 00:09:48,803:INFO:root:PCA transformed data.
-2019-11-03 00:09:48,804:INFO:root:Will call vbgmm with parameters: concoct_output_dir/, 400, 3000, 16, 500
-2019-11-03 00:09:48,960:INFO:root:Wrote assign file.
-2019-11-03 00:09:48,961:INFO:root:CONCOCT Finished
+2019-11-03 02:56:51,434:INFO:root:Results created at /kb/module/work/tmp/concoct_output_dir
+2019-11-03 02:56:52,347:INFO:root:Successfully loaded composition data.
+2019-11-03 02:56:52,371:INFO:root:Successfully loaded coverage data.
+2019-11-03 02:56:52,416:INFO:root:Performed PCA, resulted in 2 dimensions
+2019-11-03 02:56:52,550:INFO:root:Wrote original filtered data file.
+2019-11-03 02:56:52,557:INFO:root:Wrote PCA transformed file.
+2019-11-03 02:56:52,565:INFO:root:Wrote PCA components file.
+2019-11-03 02:56:52,565:INFO:root:PCA transformed data.
+2019-11-03 02:56:52,566:INFO:root:Will call vbgmm with parameters: concoct_output_dir/, 400, 3000, 16, 500
+2019-11-03 02:56:52,702:INFO:root:Wrote assign file.
+2019-11-03 02:56:52,703:INFO:root:CONCOCT Finished

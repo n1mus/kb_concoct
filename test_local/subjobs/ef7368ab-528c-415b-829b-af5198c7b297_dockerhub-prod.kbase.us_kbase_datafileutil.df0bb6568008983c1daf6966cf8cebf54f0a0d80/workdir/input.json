@@ -1,1 +1,0 @@
-{"id":"005064560823410558","method":"DataFileUtil.unpack_file","params":[{"file_path":"/kb/module/work/tmp/small_arctic_assembly.fa"}],"version":"1.1","context":{"call_stack":[{"time":"2019-11-03T00:08:02+0000","method":"DataFileUtil._unpack_file_submit"}],"service_ver":"release"}}

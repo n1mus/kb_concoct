@@ -1,1 +1,0 @@
-{"id":"310493067736","method":"DataFileUtil.file_to_shock","params":[{"make_handle":1,"file_path":"/kb/module/work/tmp/lib1.oldstyle.fastq","pack":"gzip"}],"version":"1.1","context":{"call_stack":[{"time":"2019-11-03T00:06:59+0000","method":"DataFileUtil._file_to_shock_submit"}],"service_ver":"release"}}

@@ -1,1 +1,0 @@
-{"id":"26381162288906235","method":"DataFileUtil.file_to_shock","params":[{"file_path":"/kb/module/work/tmp/small_arctic_assembly.fa","make_handle":1}],"version":"1.1","context":{"call_stack":[{"time":"2019-11-03T00:08:05+0000","method":"DataFileUtil._file_to_shock_submit"}],"service_ver":"release"}}
