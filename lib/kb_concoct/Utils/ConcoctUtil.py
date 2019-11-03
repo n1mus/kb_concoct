@@ -312,7 +312,7 @@ class ConcoctUtil:
         html_report.append({'path': result_file_path,
                             'name': os.path.basename(result_file_path),
                             'label': os.path.basename(result_file_path),
-                            'description': 'HTML summary report for MetaBAT2 App'})
+                            'description': 'HTML summary report for kb_concoct App'})
         return html_report
 
 
