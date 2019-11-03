@@ -50,7 +50,7 @@ parameters :
 
     contig_split_size :
         ui-name : Contig Split Size (>=5000bp)
-        short-hint : contig split size (default 5000bp)
+        short-hint : contig split size (default 10000bp)
         long-hint  : split contigs longer than 10000bp into chunks of 10000bp during binning.
 
 description : |
