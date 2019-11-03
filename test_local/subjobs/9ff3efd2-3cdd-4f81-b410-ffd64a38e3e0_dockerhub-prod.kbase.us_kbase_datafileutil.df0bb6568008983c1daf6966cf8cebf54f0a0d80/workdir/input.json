@@ -1,0 +1,1 @@
+{"id":"39745124924939834","method":"DataFileUtil.shock_to_file","params":[{"handle_id":"KBH_95985","file_path":"/kb/module/work/tmp/MyAssembly.fa","unpack":"uncompress"}],"version":"1.1","context":{"call_stack":[{"time":"2019-11-03T00:08:31+0000","method":"DataFileUtil._shock_to_file_submit"}],"service_ver":"release"}}

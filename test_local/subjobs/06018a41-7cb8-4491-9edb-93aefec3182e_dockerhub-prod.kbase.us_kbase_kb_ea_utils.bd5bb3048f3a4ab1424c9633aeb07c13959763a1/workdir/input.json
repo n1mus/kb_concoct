@@ -1,0 +1,1 @@
+{"id":"232268042792","method":"kb_ea_utils.calculate_fastq_stats","params":[{"read_library_path":"/kb/module/work/tmp/lib2.oldstyle.fastq"}],"version":"1.1","context":{"call_stack":[{"time":"2019-11-03T00:07:44+0000","method":"kb_ea_utils._calculate_fastq_stats_submit"}],"service_ver":"release"}}

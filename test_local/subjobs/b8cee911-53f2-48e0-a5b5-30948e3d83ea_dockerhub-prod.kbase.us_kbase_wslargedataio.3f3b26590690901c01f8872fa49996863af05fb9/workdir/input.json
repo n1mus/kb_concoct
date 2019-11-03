@@ -1,0 +1,1 @@
+{"id":"8883312969325124","method":"WsLargeDataIO.get_objects","params":[{"objects":[{"ref":"33142/3/1"}]}],"version":"1.1","context":{"call_stack":[{"time":"2019-11-03T00:09:52+0000","method":"WsLargeDataIO._get_objects_submit"}],"service_ver":"beta"}}
