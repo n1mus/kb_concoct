@@ -214,9 +214,6 @@ class ConcoctUtil:
         """
         generate_command: generate concoct params
         """
-        # print("params" + str(params))
-        # params['contig_file_path'] = self.retrieve_and_clean_assembly(params)
-        # print("params" + str(params))
 
         print("\n\nRunning generate_concoct_command")
 
@@ -237,6 +234,21 @@ class ConcoctUtil:
         log('Generated run_concoct command: {}'.format(command))
 
         return command
+
+
+    def generate_summary_utils_command(self, params):
+        """
+        generate_command: generate summary utils command
+        """
+
+        print("\n\nRunning generate_summary_utils_command")
+
+        command = '/bin/bash summary-utils.sh'
+
+        log('Generated summary-utils command: {}'.format(command))
+
+        return command
+
 
     def generate_output_file_list(self, result_directory):
         """
@@ -412,31 +424,41 @@ class ConcoctUtil:
 
         self.run_command(command)
 
+
+        #run summary utilities
+        command = self.generate_summary_utils_command(params)
+
+        self.run_command(command)
+
+
+
+
         os.chdir(cwd)
         log('changing working dir to {}'.format(cwd))
 
         log('Saved result files to: {}'.format(result_directory))
         log('Generated files:\n{}'.format('\n'.join(os.listdir(result_directory))))
-        print("result directory" + result_directory,self.CONCOCT_BIN_DIR)
+
+
 
         print(str(os.path.join(result_directory,self.CONCOCT_BIN_DIR)))
 
-        # generate_binned_contig_param = {
-        #     'file_directory': os.path.join(result_directory,self.CONCOCT_BIN_DIR),
-        #     'assembly_ref': params['assembly_ref'],
-        #     'binned_contig_name': params['binned_contig_name'],
-        #     'workspace_name': params['workspace_name']
-        # }
-        #
-        # binned_contig_obj_ref = self.mgu.file_to_binned_contigs(generate_binned_contig_param).get('binned_contig_obj_ref')
-        #
-        # reportVal = self.generate_report(binned_contig_obj_ref, params)
-        #
-        returnVal = {
-            'result_directory': result_directory
-            #'binned_contig_obj_ref': binned_contig_obj_ref
+        generate_binned_contig_param = {
+            'file_directory': os.path.join(result_directory,self.CONCOCT_BIN_DIR),
+            'assembly_ref': params['assembly_ref'],
+            'binned_contig_name': params['binned_contig_name'],
+            'workspace_name': params['workspace_name']
         }
-        #
-        # returnVal.update(reportVal)
-        #
+
+        binned_contig_obj_ref = self.mgu.file_to_binned_contigs(generate_binned_contig_param).get('binned_contig_obj_ref')
+
+        reportVal = self.generate_report(binned_contig_obj_ref, params)
+
+        returnVal = {
+            'result_directory': result_directory,
+            'binned_contig_obj_ref': binned_contig_obj_ref
+        }
+
+        returnVal.update(reportVal)
+
         return returnVal

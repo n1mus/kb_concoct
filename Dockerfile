@@ -20,7 +20,7 @@ RUN git clone https://github.com/BinPro/CONCOCT && cd /CONCOCT && \
 
 # Editing one of the CONCOCT utility scripts to give bins consistent names (instead of starting with a number)
 # Right now, this is also a hack to use the existing MetagenomeUtils functions, which are overly geared for MaxBin2 results - need to fix!
-RUN sh -c "sed -i 's/{0}.fa/concoct-bin_{0}.000.fasta/' /kb/deployment/bin/CONCOCT/scripts/extract_fasta_bins.py"
+# RUN sh -c "sed -i 's/{0}.fa/concoct-bin_{0}.fa/' /kb/deployment/bin/CONCOCT/scripts/extract_fasta_bins.py"
 
 
 COPY ./ /kb/module
@@ -29,6 +29,7 @@ RUN chmod -R a+rw /kb/module
 
 WORKDIR /kb/module
 
+ENV PATH=/kb/module/lib/kb_concoct/bin:$PATH
 ENV PATH=/kb/module/lib/kb_concoct/bin/bbmap:$PATH
 ENV PATH=/kb/module/lib/kb_concoct/bin/samtools/bin:$PATH
 ENV PATH=/kb/deployment/bin/CONCOCT/bin:/kb/deployment/bin/CONCOCT/scripts:$PATH
