@@ -417,6 +417,7 @@ class ConcoctUtil:
 
         log('Saved result files to: {}'.format(result_directory))
         log('Generated files:\n{}'.format('\n'.join(os.listdir(result_directory))))
+        print("result directory" + result_directory,self.CONCOCT_BIN_DIR)
 
         # generate_binned_contig_param = {
         #     'file_directory': os.path.join(result_directory,self.CONCOCT_BIN_DIR),
