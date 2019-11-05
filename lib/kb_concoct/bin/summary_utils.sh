@@ -3,6 +3,7 @@
 echo "Running summary_utils.sh script"
 # set defaults
 BINS='final_bins'
+BINSDIR='concoct_output_dir'
 
 ### ---------------------- ###
 ###        Functions       ###
@@ -26,7 +27,8 @@ echo "Test to see if working"
 # The "binned_contigs_obj_ref" requires a file called *.summary so
 # I'm creating a fake one.  The binned contigs object needs to be updated
 # so this is not necessary.
-echo `pwd`
+cd $BINSDIR
+
 echo -e "Bin name\tCompleteness\tGenome size\tGC content" > $BINS/notreal.summary
 #testRun "create $BINS/notreal.summary" $?
 
