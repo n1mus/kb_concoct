@@ -419,6 +419,8 @@ class ConcoctUtil:
         log('Generated files:\n{}'.format('\n'.join(os.listdir(result_directory))))
         print("result directory" + result_directory,self.CONCOCT_BIN_DIR)
 
+        print(str(os.path.join(result_directory,self.CONCOCT_BIN_DIR)))
+
         # generate_binned_contig_param = {
         #     'file_directory': os.path.join(result_directory,self.CONCOCT_BIN_DIR),
         #     'assembly_ref': params['assembly_ref'],
