@@ -418,22 +418,22 @@ class ConcoctUtil:
         log('Saved result files to: {}'.format(result_directory))
         log('Generated files:\n{}'.format('\n'.join(os.listdir(result_directory))))
 
-        generate_binned_contig_param = {
-            'file_directory': os.path.join(result_directory,self.CONCOCT_BIN_DIR),
-            'assembly_ref': params['assembly_ref'],
-            'binned_contig_name': params['binned_contig_name'],
-            'workspace_name': params['workspace_name']
-        }
-
-        binned_contig_obj_ref = self.mgu.file_to_binned_contigs(generate_binned_contig_param).get('binned_contig_obj_ref')
-
-        reportVal = self.generate_report(binned_contig_obj_ref, params)
-
-        returnVal = {
-            'result_directory': result_directory,
-            'binned_contig_obj_ref': binned_contig_obj_ref
-        }
-
-        returnVal.update(reportVal)
-
-        return returnVal
+        # generate_binned_contig_param = {
+        #     'file_directory': os.path.join(result_directory,self.CONCOCT_BIN_DIR),
+        #     'assembly_ref': params['assembly_ref'],
+        #     'binned_contig_name': params['binned_contig_name'],
+        #     'workspace_name': params['workspace_name']
+        # }
+        #
+        # binned_contig_obj_ref = self.mgu.file_to_binned_contigs(generate_binned_contig_param).get('binned_contig_obj_ref')
+        #
+        # reportVal = self.generate_report(binned_contig_obj_ref, params)
+        #
+        # returnVal = {
+        #     'result_directory': result_directory,
+        #     'binned_contig_obj_ref': binned_contig_obj_ref
+        # }
+        #
+        # returnVal.update(reportVal)
+        #
+        # return returnVal
