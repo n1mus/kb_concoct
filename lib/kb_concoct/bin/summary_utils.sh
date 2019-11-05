@@ -3,7 +3,7 @@
 echo "Running summary_utils.sh script"
 # set defaults
 BINS='final_bins'
-echo $BINS
+printf "Bins $BINS\n"
 
 ### ---------------------- ###
 ###        Functions       ###
