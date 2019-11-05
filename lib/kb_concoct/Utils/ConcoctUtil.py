@@ -208,7 +208,24 @@ class ConcoctUtil:
 
         log('running samtools command: {}'.format(command))
         self.run_command(command)
-        return assembly_clean
+
+    #
+        # create the depth file for this bam
+        #
+        assembly_basename=os.path.basename(assembly_clean)
+
+        min_contig_length = task_params['min_contig_length']
+
+        depth_file_path  = os.path.join(self.scratch, str(uuid.uuid4()) + '.depth.txt')
+        self.mkdir_p(assembly_basename + '.d')
+        command = '/bin/bash /kb/module/lib/kb_concoct/bin/jgi_summarize_bam_contig_depths '
+        command += '--outputDepth {} --minContigLength {} --minContigDepth 1 '.format(depth_file_path, min_contig_length)
+        command += sorted_bam
+
+        log('running summarize_bam_contig_depths command: {}'.format(command))
+        self.run_command(command)
+
+        return assembly_clean, depth_file_path
 
     def generate_concoct_command(self, params):
         """
@@ -382,6 +399,31 @@ class ConcoctUtil:
 
         return report_output
 
+    def createDictFromDepthfile(self, depth_file_path):
+        # keep contig order (required by metabat2)
+        depth_file_dict = {}
+        with open(depth_file_path,'r') as f:
+            header = f.readline().rstrip().split("\t")
+            # print('HEADER1 {}'.format(header))
+            # map(str.strip, header)
+
+            for line in f:
+                # deal with cases were fastq name has spaces.Assume first
+                # non white space word is unique and use this as ID.
+                # line = line.rstrip()
+                vals = line.rstrip().split("\t")
+                if ' ' in vals[0]:
+                    ID = vals[0].split()[0]
+                else:
+                    ID = vals[0]
+
+                depth_file_dict[ID] = vals[1:]
+
+            depth_file_dict['header'] = header
+
+        return depth_file_dict
+
+
     def run_concoct(self, params):
         """
         run_concoct: concoct app
@@ -421,7 +463,11 @@ class ConcoctUtil:
         log('changing working dir to {}'.format(result_directory))
         os.chdir(result_directory)
         #run alignments, and update input contigs to use the clean file
-        params['contig_file_path'] = self.generate_alignment_bams(params)
+        (params['contig_file_path'], depth_file_path) = (self.generate_alignment_bams(params)[0], self.generate_alignment_bams(params)[1])
+
+        #depth_file_path = metabat_runner.generate_alignment_bams(params)[1]
+
+        depth_dict = concoct_runner.createDictFromDepthfile(depth_file_path)
 
         #run concoct
         command = self.generate_concoct_command(params)
