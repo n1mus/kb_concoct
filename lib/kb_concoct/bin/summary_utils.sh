@@ -41,7 +41,7 @@ echo -e "Bin name\tCompleteness\tGenome size\tGC content" > $BINS/notreal.summar
 # recognize them.
 # Test that metabat produced some bins
 BINSARRAY=($(find $BINS -name "*.fa"))
-testRun "find $BINS -name '*.fa'"
+testRun "find $BINS -name '*.fa'" $?
 COUNT=0
 for i in ${BINSARRAY[@]}; do
     if [[ $i =~ "unbinned" ]]; then
