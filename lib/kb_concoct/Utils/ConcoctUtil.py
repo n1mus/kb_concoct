@@ -429,11 +429,11 @@ class ConcoctUtil:
         #
         # reportVal = self.generate_report(binned_contig_obj_ref, params)
         #
-        # returnVal = {
-        #     'result_directory': result_directory,
-        #     'binned_contig_obj_ref': binned_contig_obj_ref
-        # }
+        returnVal = {
+            'result_directory': result_directory
+            #'binned_contig_obj_ref': binned_contig_obj_ref
+        }
         #
         # returnVal.update(reportVal)
         #
-        # return returnVal
+        return returnVal
