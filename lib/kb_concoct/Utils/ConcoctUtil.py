@@ -218,7 +218,7 @@ class ConcoctUtil:
 
         depth_file_path  = os.path.join(self.scratch, str(uuid.uuid4()) + '.depth.txt')
         self.mkdir_p(assembly_basename + '.d')
-        command = '/bin/bash /kb/module/lib/kb_concoct/bin/jgi_summarize_bam_contig_depths '
+        command = '/kb/module/lib/kb_concoct/bin/jgi_summarize_bam_contig_depths '
         command += '--outputDepth {} --minContigLength {} --minContigDepth 1 '.format(depth_file_path, min_contig_length)
         command += sorted_bam
 
