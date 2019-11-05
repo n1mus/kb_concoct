@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Running summary-utils.sh script"
+echo "Running summary_utils.sh script"
 # set defaults
 BINS='final_bins'
 
@@ -60,4 +60,4 @@ for i in ${BINSARRAY[@]}; do
 done
 
 # cleanup large files
-rm -r $BINSDIR
+#rm -r $BINSDIR
