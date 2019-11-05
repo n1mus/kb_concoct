@@ -463,7 +463,7 @@ class ConcoctUtil:
         log('changing working dir to {}'.format(result_directory))
         os.chdir(result_directory)
         #run alignments, and update input contigs to use the clean file
-        (params['contig_file_path'], depth_file_path) = (self.generate_alignment_bams(params)[0], self.generate_alignment_bams(params)[1])
+        params['contig_file_path'], depth_file_path = self.generate_alignment_bams(params)[0], self.generate_alignment_bams(params)[1]
 
         #depth_file_path = metabat_runner.generate_alignment_bams(params)[1]
 
