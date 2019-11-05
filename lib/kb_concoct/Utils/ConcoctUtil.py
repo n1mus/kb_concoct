@@ -243,7 +243,7 @@ class ConcoctUtil:
 
         print("\n\nRunning generate_summary_utils_command")
 
-        command = '/bin/bash /kb/module/lib/kb_concoct/bin/summary_utils.sh'
+        command = "/bin/bash /kb/module/lib/kb_concoct/bin/summary_utils.sh"
 
         log('Generated summary_utils command: {}'.format(command))
 
@@ -355,6 +355,10 @@ class ConcoctUtil:
 
         """
         log('Generating report')
+
+        result_directory = os.path.join(self.scratch, "concoct_output_dir")
+
+        params['result_directory'] = result_directory
 
         output_files = self.generate_output_file_list(params['result_directory'])
 
