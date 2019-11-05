@@ -23,11 +23,12 @@ testRun()
 set -x
 
 
+echo "Test to see if working"
 # The "binned_contigs_obj_ref" requires a file called *.summary so
 # I'm creating a fake one.  The binned contigs object needs to be updated
 # so this is not necessary.
 echo -e "Bin name\tCompleteness\tGenome size\tGC content" > $BINS/notreal.summary
-testRun "create $BINS/notreal.summary" $?
+#testRun "create $BINS/notreal.summary" $?
 
 # Unfortunately, the MetagenomeUtils function that loads the bins into "binned_contig_obj_ref"
 # uses a regular expression that requires the bin names to be in the form <something>.123.fasta
