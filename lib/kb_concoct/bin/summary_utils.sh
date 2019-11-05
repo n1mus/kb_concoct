@@ -3,7 +3,7 @@
 echo "Running summary_utils.sh script"
 # set defaults
 BINS='final_bins'
-
+echo $BINS
 #
 # ### ---------------------- ###
 # ###        Functions       ###
@@ -39,7 +39,7 @@ BINS='final_bins'
 # # recognize them.
 # # Test that metabat produced some bins
 # BINSARRAY=($(find $BINS -name "*.fa"))
-# testRun "find $BINS -name '*.fa'" $?
+# testRun "find $BINS -name '*.fa'"
 # COUNT=0
 # for i in ${BINSARRAY[@]}; do
 #     if [[ $i =~ "unbinned" ]]; then
