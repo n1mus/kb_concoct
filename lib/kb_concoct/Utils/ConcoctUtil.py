@@ -243,9 +243,9 @@ class ConcoctUtil:
 
         print("\n\nRunning generate_summary_utils_command")
 
-        command = '/bin/bash /kb/module/lib/kb_concoct/bin/summary-utils.sh'
+        command = '/bin/bash /kb/module/lib/kb_concoct/bin/summary_utils.sh'
 
-        log('Generated summary-utils command: {}'.format(command))
+        log('Generated summary_utils command: {}'.format(command))
 
         return command
 
