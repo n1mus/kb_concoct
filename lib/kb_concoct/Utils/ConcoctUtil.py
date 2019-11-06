@@ -289,12 +289,12 @@ class ConcoctUtil:
                 if (dirname.endswith(self.CONCOCT_BIN_DIR)):
                     baseDir=os.path.basename(dirname)
                     for file in files:
-                        if (file.endswith('.summary')):
+                        if (file.endswith('.sam') or file.endswith('.bam') or file.endswith('.bai')):
                             continue
                         full=os.path.join(dirname, file)
                         zip_file.write(full,os.path.join(baseDir,file))
                 for file in files:
-                    if (file.endswith('.depth.txt')):
+                    if (file.endswith('_depth.txt')):
                         zip_file.write(os.path.join(dirname, file),file)
 
 
