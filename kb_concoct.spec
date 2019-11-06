@@ -22,8 +22,8 @@ module kb_concoct {
 
         optional params:
         thread: number of threads; default 1
-        min_contig_length: minimum contig length; default 1000
-        contig_split_length: length to split long contigs; default 10000
+        min_contig_length: minimum contig length; default 1000bp
+        contig_split_size: length to split long contigs; default 10000bp
         ref: https://github.com/BinPro/CONCOCT
 
     */
@@ -35,7 +35,7 @@ module kb_concoct {
 
         int thread;
         int min_contig_length;
-        int contig_split_length;
+        int contig_split_size;
     } ConcoctInputParams;
 
     /*
