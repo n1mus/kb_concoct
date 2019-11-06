@@ -189,6 +189,8 @@ class ConcoctUtil:
         log('running alignment command: {}'.format(command))
         out,err = self.run_command(command)
 
+        task_params['sorted_bam'] = sorted_bam
+
         # create bam files from sam files
         command = 'samtools view -F 0x04 -uS {} | samtools sort - -o {}'.format(sam,sorted_bam)
 
@@ -208,24 +210,23 @@ class ConcoctUtil:
 
         log('running samtools command: {}'.format(command))
         self.run_command(command)
+        return assembly_clean
 
-    #
+    def generate_make_coverage_table_command(self, task_params):
         # create the depth file for this bam
         #
-        assembly_basename=os.path.basename(assembly_clean)
 
         min_contig_length = task_params['min_contig_length']
 
-        depth_file_path  = os.path.join(self.scratch, str(uuid.uuid4()) + '.depth.txt')
-        self.mkdir_p(assembly_basename + '.d')
+        depth_file_path  = os.path.join(self.scratch, str('concoct_depth.txt'))
         command = '/kb/module/lib/kb_concoct/bin/jgi_summarize_bam_contig_depths '
         command += '--outputDepth {} --minContigLength {} --minContigDepth 1 '.format(depth_file_path, min_contig_length)
-        command += sorted_bam
+        command += task_params['sorted_bam']
 
         log('running summarize_bam_contig_depths command: {}'.format(command))
         self.run_command(command)
 
-        return assembly_clean, depth_file_path
+        return depth_file_path
 
     def generate_concoct_command(self, params):
         """
@@ -304,7 +305,7 @@ class ConcoctUtil:
 
         return output_files
 
-    def generate_html_report(self, result_directory, assembly_ref, binned_contig_obj_ref, header):
+    def generate_html_report(self, result_directory, assembly_ref, binned_contig_obj_ref):
         """
         generate_html_report: generate html summary report
         """
@@ -463,11 +464,17 @@ class ConcoctUtil:
         log('changing working dir to {}'.format(result_directory))
         os.chdir(result_directory)
         #run alignments, and update input contigs to use the clean file
-        params['contig_file_path'], depth_file_path = self.generate_alignment_bams(params)[0], self.generate_alignment_bams(params)[1]
+
+        params['contig_file_path'] = self.generate_alignment_bams(params)
+
+        depth_file_path = self.generate_make_coverage_table_command(params)
+
+        #depth_file_path = self.generate_alignment_bams(params)
+
 
         #depth_file_path = metabat_runner.generate_alignment_bams(params)[1]
 
-        depth_dict = concoct_runner.createDictFromDepthfile(depth_file_path)
+        depth_dict = self.createDictFromDepthfile(depth_file_path)
 
         #run concoct
         command = self.generate_concoct_command(params)
