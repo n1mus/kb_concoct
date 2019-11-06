@@ -68,6 +68,57 @@
                 "min_int" : 5000,
                 "validate_as" : "int"
             }
+        },
+        {
+          "id": "kmer_size",
+          "optional": true,
+          "advanced": true,
+          "allow_multiple": false,
+          "default_values": [ 4 ],
+          "field_type": "text",
+          "text_options": {
+              "min_int" : 2,
+              "min_int" : 8,
+              "validate_as" : "int"
+            }
+        },
+        {
+          "id": "max_clusters_for_vgmm",
+          "optional": true,
+          "advanced": true,
+          "allow_multiple": false,
+          "default_values": [ 400 ],
+          "field_type": "text",
+          "text_options": {
+              "min_int" : 100,
+              "max_int" : 800,
+              "validate_as" : "int"
+            }
+        },
+        {
+          "id": "max_iterations_for_vgmm",
+          "optional": true,
+          "advanced": true,
+          "allow_multiple": false,
+          "default_values": [ 500 ],
+          "field_type": "text",
+          "text_options": {
+              "min_int" : 50,
+              "max_int" : 2000,
+              "validate_as" : "int"
+            }
+        },
+        {
+          "id": "no_cov_normalization",
+          "optional": true,
+          "advanced": true,
+          "allow_multiple": false,
+          "default_values": [ 0 ],
+          "field_type": "checkbox",
+          "checkbox_options": {
+              "checked_value": 1,
+              "unchecked_value": 0
+            }
         }
     ],
     "behavior": {

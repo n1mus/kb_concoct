@@ -46,12 +46,32 @@ parameters :
     min_contig_length :
         ui-name : Minimum Contig Length (>1000bp)
         short-hint : minimum contig length (default 2500bp)
-        long-hint  : minimum contig length should not be less than 1500bp.
+        long-hint  : minimum contig length should not be less than 1500bp
 
     contig_split_size :
         ui-name : Contig Split Size (>=5000bp)
         short-hint : contig split size (default 10000bp)
-        long-hint  : split contigs longer than 10000bp into chunks of 10000bp during binning.
+        long-hint  : split contigs longer than 10000bp into chunks of 10000bp during binning
+
+    kmer_size :
+        ui-name : Kmer Length (4)
+        short-hint : specify kmer length (default 4)
+        long-hint  : specify kmer length (default 4)
+
+    max_clusters_for_vgmm :
+        ui-name : Maximum Number of Clusters for VGMM (400)
+        short-hint : specify a maximum number of clusters for VGMM (default 400)
+        long-hint  : specify a maximum number of clusters for VGMM (default 400)
+
+    max_iterations_for_vgmm :
+        ui-name : Maximum Number of Iterations for VGMM (500)
+        short-hint : specify a maximum number of iterations for VGMM (default 500)
+        long-hint  : specify a maximum number of iterations for VGMM (default 500)
+
+    no_cov_normalization :
+        ui-name : Skip Coverage Normalization (false)
+        short-hint : skip coverage normalization step (default false)
+        long-hint  : skip coverage normalization step (default false)
 
 description : |
     <p>CONCOCT clusters metagenomic contigs into different "bins", each of which should correspond to a putative genome.</p>
