@@ -36,6 +36,10 @@ module kb_concoct {
         int thread;
         int min_contig_length;
         int contig_split_size;
+        int kmer_size;
+        int max_clusters_for_vgmm;
+        int max_iterations_for_vgmm;
+
     } ConcoctInputParams;
 
     /*
