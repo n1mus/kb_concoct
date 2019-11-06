@@ -285,17 +285,28 @@ class ConcoctUtil:
                              allowZip64=True) as zip_file:
 
             # grab all files we want to zip
+            # for dirname, subdirs, files in os.walk(result_directory):
+            #     if (dirname.endswith(self.CONCOCT_BIN_DIR)):
+            #         baseDir=os.path.basename(dirname)
+            #         for file in files:
+            #             if (file.endswith('.sam') or file.endswith('.bam') or file.endswith('.bai')):
+            #                 continue
+            #             full=os.path.join(dirname, file)
+            #             zip_file.write(full,os.path.join(baseDir,file))
+            #     for file in files:
+            #         if (file.endswith('_depth.txt')):
+            #             zip_file.write(os.path.join(dirname, file),file)
+
             for dirname, subdirs, files in os.walk(result_directory):
+                for file in files:
+                    if (file.endswith('.sam') or file.endswith('.bam') or file.endswith('.bai')):
+                            continue
+                    zip_file.write(os.path.join(dirname, file),file)
                 if (dirname.endswith(self.CONCOCT_BIN_DIR)):
                     baseDir=os.path.basename(dirname)
                     for file in files:
-                        if (file.endswith('.sam') or file.endswith('.bam') or file.endswith('.bai')):
-                            continue
                         full=os.path.join(dirname, file)
                         zip_file.write(full,os.path.join(baseDir,file))
-                for file in files:
-                    if (file.endswith('_depth.txt')):
-                        zip_file.write(os.path.join(dirname, file),file)
 
 
         output_files.append({'path': result_file,
