@@ -217,8 +217,6 @@ class kb_concoctTest(unittest.TestCase):
         command = self.concoct_runner.generate_concoct_command(input_params)
         self.assertEqual(command, expect_command)
 
--k {} -c {} -i {}
-
     def test_run_concoct(self):
         method_name = 'test_run_concoct'
         print ("\n=================================================================")
