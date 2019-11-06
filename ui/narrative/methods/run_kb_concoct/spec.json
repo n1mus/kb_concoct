@@ -78,7 +78,7 @@
           "field_type": "text",
           "text_options": {
               "min_int" : 2,
-              "min_int" : 8,
+              "max_int" : 8,
               "validate_as" : "int"
             }
         },

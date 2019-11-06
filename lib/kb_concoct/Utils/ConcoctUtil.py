@@ -235,12 +235,14 @@ class ConcoctUtil:
 
         print("\n\nRunning generate_concoct_command")
 
+        print("no_cov_normalization is: " + str(params.get('no_cov_normalization')))
+
         command = 'python /kb/deployment/bin/CONCOCT/scripts/cut_up_fasta.py {} -c {} -o 0 --merge_last -b temp.bed > concoct_output_dir/split_contigs.fa'.format(params.get('contig_file_path'),params.get('contig_split_size'))
         command += ' && '
         command += 'python /kb/deployment/bin/CONCOCT/scripts/concoct_coverage_table.py temp.bed concoct_output_dir/*.sorted.bam > concoct_output_dir/coverage_table.tsv'
         command += ' && '
-        command += '/kb/deployment/bin/CONCOCT/bin/concoct --composition_file concoct_output_dir/split_contigs.fa -l {} -b concoct_output_dir --coverage_file concoct_output_dir/coverage_table.tsv -t {}'.format(params.get('min_contig_length'),
-                                         self.BBMAP_THREADS)
+        command += 'python /kb/deployment/bin/CONCOCT/bin/concoct --composition_file concoct_output_dir/split_contigs.fa -l {} -b concoct_output_dir --coverage_file concoct_output_dir/coverage_table.tsv -t {} -k {} -c {} -i {}'.format(params.get('min_contig_length'),
+                                         self.BBMAP_THREADS,params.get('kmer_size'),params.get('max_clusters_for_vgmm'),params.get('max_iterations_for_vgmm'))
         command += ' && '
         command += 'python /kb/deployment/bin/CONCOCT/scripts/merge_cutup_clustering.py concoct_output_dir/clustering_gt{}.csv > concoct_output_dir/clustering_merged.csv'.format(params.get('min_contig_length'))
         command += ' && '

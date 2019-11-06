@@ -54,22 +54,22 @@ parameters :
         long-hint  : split contigs longer than 10000bp into chunks of 10000bp during binning
 
     kmer_size :
-        ui-name : Kmer Length (4)
+        ui-name : Kmer Length
         short-hint : specify kmer length (default 4)
         long-hint  : specify kmer length (default 4)
 
     max_clusters_for_vgmm :
-        ui-name : Maximum Number of Clusters for VGMM (400)
+        ui-name : Maximum Number of Clusters for VGMM
         short-hint : specify a maximum number of clusters for VGMM (default 400)
         long-hint  : specify a maximum number of clusters for VGMM (default 400)
 
     max_iterations_for_vgmm :
-        ui-name : Maximum Number of Iterations for VGMM (500)
+        ui-name : Maximum Number of Iterations for VGMM
         short-hint : specify a maximum number of iterations for VGMM (default 500)
         long-hint  : specify a maximum number of iterations for VGMM (default 500)
 
     no_cov_normalization :
-        ui-name : Skip Coverage Normalization (false)
+        ui-name : Skip Coverage Normalization
         short-hint : skip coverage normalization step (default false)
         long-hint  : skip coverage normalization step (default false)
 
