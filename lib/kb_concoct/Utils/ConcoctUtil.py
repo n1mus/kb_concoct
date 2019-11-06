@@ -299,7 +299,9 @@ class ConcoctUtil:
 
             for dirname, subdirs, files in os.walk(result_directory):
                 for file in files:
-                    if (file.endswith('.sam') or file.endswith('.bam') or file.endswith('.bai')):
+                    if (file.endswith('.sam') or file.endswith('.bam') or file.endswith('.bai') or file.endswith('.summary')):
+                            continue
+                    if (dirname.endswith(self.CONCOCT_BIN_DIR)):
                             continue
                     zip_file.write(os.path.join(dirname, file),file)
                 if (dirname.endswith(self.CONCOCT_BIN_DIR)):
