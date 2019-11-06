@@ -152,6 +152,18 @@
                 {
                     "input_parameter": "contig_split_size",
                     "target_property": "contig_split_size"
+                },
+                {
+                    "input_parameter": "kmer_size",
+                    "target_property": "kmer_size"
+                },
+                {
+                    "input_parameter": "max_clusters_for_vgmm",
+                    "target_property": "max_clusters_for_vgmm"
+                },
+                {
+                    "input_parameter": "max_iterations_for_vgmm",
+                    "target_property": "max_iterations_for_vgmm"
                 }
             ],
             "output_mapping": [

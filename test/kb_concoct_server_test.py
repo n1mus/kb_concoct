@@ -208,7 +208,7 @@ class kb_concoctTest(unittest.TestCase):
         expect_command += '-b temp.bed > concoct_output_dir/split_contigs.fa && python /kb/deployment/bin/CONCOCT/scripts/concoct_coverage_table.py '
         expect_command += 'temp.bed concoct_output_dir/*.sorted.bam > concoct_output_dir/coverage_table.tsv && /kb/deployment/bin/CONCOCT/bin/concoct '
         expect_command += '--composition_file concoct_output_dir/split_contigs.fa -l 3000 -b concoct_output_dir '
-        expect_command += '--coverage_file concoct_output_dir/coverage_table.tsv -t 16 && python '
+        expect_command += '--coverage_file concoct_output_dir/coverage_table.tsv -t 16 -k 4 -c 400 -i 500 && python '
         expect_command += '/kb/deployment/bin/CONCOCT/scripts/merge_cutup_clustering.py concoct_output_dir/clustering_gt3000.csv '
         expect_command += '> concoct_output_dir/clustering_merged.csv && mkdir '
         expect_command += 'concoct_output_dir/final_bins && python /kb/deployment/bin/CONCOCT/scripts/extract_fasta_bins.py '
@@ -217,7 +217,7 @@ class kb_concoctTest(unittest.TestCase):
         command = self.concoct_runner.generate_concoct_command(input_params)
         self.assertEqual(command, expect_command)
 
-
+-k {} -c {} -i {}
 
     def test_run_concoct(self):
         method_name = 'test_run_concoct'
