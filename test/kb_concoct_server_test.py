@@ -201,7 +201,10 @@ class kb_concoctTest(unittest.TestCase):
         input_params = {
             'contig_file_path': 'mycontig',
             'min_contig_length': '3000',
-            'contig_split_size': '10000'
+            'contig_split_size': '10000',
+            'kmer_size': '4',
+            'max_clusters_for_vgmm': '400',
+            'max_iterations_for_vgmm': '500'
         }
 
         expect_command = 'python /kb/deployment/bin/CONCOCT/scripts/cut_up_fasta.py mycontig -c 10000 -o 0 --merge_last '
@@ -229,6 +232,9 @@ class kb_concoctTest(unittest.TestCase):
                                              'assembly_ref': self.assembly_ref,
                                              'min_contig_length': 3000,
                                              'contig_split_size': 10000,
+                                             'kmer_size': 4,
+                                             'max_clusters_for_vgmm': 400,
+                                             'max_iterations_for_vgmm': 500,
                                              'binned_contig_name': 'concoct_bin_obj',
                                              'reads_list': [self.int1_oldstyle_reads_ref, self.int2_oldstyle_reads_ref] })
 
