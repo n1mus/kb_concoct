@@ -202,6 +202,7 @@ class kb_concoctTest(unittest.TestCase):
             'contig_file_path': 'mycontig',
             'min_contig_length': '3000',
             'contig_split_size': '10000',
+            'contig_split_overlap': '0',
             'kmer_size': '4',
             'max_clusters_for_vgmm': '400',
             'max_iterations_for_vgmm': '500'
@@ -209,7 +210,7 @@ class kb_concoctTest(unittest.TestCase):
 
         expect_command = 'python /kb/deployment/bin/CONCOCT/scripts/cut_up_fasta.py mycontig -c 10000 -o 0 --merge_last '
         expect_command += '-b temp.bed > concoct_output_dir/split_contigs.fa && python /kb/deployment/bin/CONCOCT/scripts/concoct_coverage_table.py '
-        expect_command += 'temp.bed concoct_output_dir/*.sorted.bam > concoct_output_dir/coverage_table.tsv && /kb/deployment/bin/CONCOCT/bin/concoct '
+        expect_command += 'temp.bed concoct_output_dir/*.sorted.bam > concoct_output_dir/coverage_table.tsv && python /kb/deployment/bin/CONCOCT/bin/concoct '
         expect_command += '--composition_file concoct_output_dir/split_contigs.fa -l 3000 -b concoct_output_dir '
         expect_command += '--coverage_file concoct_output_dir/coverage_table.tsv -t 16 -k 4 -c 400 -i 500 && python '
         expect_command += '/kb/deployment/bin/CONCOCT/scripts/merge_cutup_clustering.py concoct_output_dir/clustering_gt3000.csv '
@@ -232,6 +233,7 @@ class kb_concoctTest(unittest.TestCase):
                                              'assembly_ref': self.assembly_ref,
                                              'min_contig_length': 3000,
                                              'contig_split_size': 10000,
+                                             'contig_split_overlap': 0,
                                              'kmer_size': 4,
                                              'max_clusters_for_vgmm': 400,
                                              'max_iterations_for_vgmm': 500,

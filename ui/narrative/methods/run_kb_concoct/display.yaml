@@ -53,6 +53,11 @@ parameters :
         short-hint : contig split size (default 10000bp)
         long-hint  : split contigs longer than 10000bp into chunks of 10000bp during binning
 
+    contig_split_overlap :
+        ui-name : Contig Split Overlap (>=0bp)
+        short-hint : contig split overlap (default 0bp)
+        long-hint  : split contig overlap to use for binning input
+
     kmer_size :
         ui-name : Kmer Length
         short-hint : specify kmer length (default 4)

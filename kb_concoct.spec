@@ -24,6 +24,7 @@ module kb_concoct {
         thread: number of threads; default 1
         min_contig_length: minimum contig length; default 1000bp
         contig_split_size: length to split long contigs; default 10000bp
+        contig_split_overlap: length to split long contigs; default 0bp
         ref: https://github.com/BinPro/CONCOCT
 
     */
@@ -36,6 +37,7 @@ module kb_concoct {
         int thread;
         int min_contig_length;
         int contig_split_size;
+        int contig_split_overlap;
         int kmer_size;
         int max_clusters_for_vgmm;
         int max_iterations_for_vgmm;

@@ -70,6 +70,18 @@
             }
         },
         {
+            "id": "contig_split_overlap",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ 0 ],
+            "field_type": "text",
+            "text_options": {
+                "min_int" : 0,
+                "validate_as" : "int"
+            }
+        },
+        {
           "id": "kmer_size",
           "optional": true,
           "advanced": true,
@@ -78,7 +90,7 @@
           "field_type": "text",
           "text_options": {
               "min_int" : 2,
-              "max_int" : 8,
+              "max_int" : 6,
               "validate_as" : "int"
             }
         },
@@ -152,6 +164,10 @@
                 {
                     "input_parameter": "contig_split_size",
                     "target_property": "contig_split_size"
+                },
+                {
+                    "input_parameter": "contig_split_overlap",
+                    "target_property": "contig_split_overlap"
                 },
                 {
                     "input_parameter": "kmer_size",
