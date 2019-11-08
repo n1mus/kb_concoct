@@ -121,15 +121,40 @@
             }
         },
         {
+          "id": "total_percentage_pca",
+          "optional": true,
+          "advanced": true,
+          "allow_multiple": false,
+          "default_values": [ 90 ],
+          "field_type": "text",
+          "text_options": {
+              "min_int" : 10,
+              "max_int" : 100,
+              "validate_as" : "int"
+            }
+        },
+        {
           "id": "no_cov_normalization",
           "optional": true,
           "advanced": true,
           "allow_multiple": false,
-          "default_values": [ 0 ],
+          "default_values": [ " " ],
           "field_type": "checkbox",
           "checkbox_options": {
-              "checked_value": 1,
-              "unchecked_value": 0
+              "checked_value": "--no_cov_normalization",
+              "unchecked_value": " "
+            }
+        },
+        {
+          "id": "no_total_coverage",
+          "optional": true,
+          "advanced": true,
+          "allow_multiple": false,
+          "default_values": [ " " ],
+          "field_type": "checkbox",
+          "checkbox_options": {
+              "checked_value": "--no_total_coverage",
+              "unchecked_value": " "
             }
         }
     ],
@@ -180,6 +205,18 @@
                 {
                     "input_parameter": "max_iterations_for_vgmm",
                     "target_property": "max_iterations_for_vgmm"
+                },
+                {
+                    "input_parameter": "total_percentage_pca",
+                    "target_property": "total_percentage_pca"
+                },
+                {
+                    "input_parameter": "no_cov_normalization",
+                    "target_property": "no_cov_normalization"
+                },
+                {
+                    "input_parameter": "no_total_coverage",
+                    "target_property": "no_total_coverage"
                 }
             ],
             "output_mapping": [

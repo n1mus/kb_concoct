@@ -205,14 +205,17 @@ class kb_concoctTest(unittest.TestCase):
             'contig_split_overlap': '0',
             'kmer_size': '4',
             'max_clusters_for_vgmm': '400',
-            'max_iterations_for_vgmm': '500'
+            'max_iterations_for_vgmm': '500',
+            'total_percentage_pca': '90',
+            'no_cov_normalization': '--no_cov_normalization',
+            'no_total_coverage': '--no_total_coverage'
         }
 
         expect_command = 'python /kb/deployment/bin/CONCOCT/scripts/cut_up_fasta.py mycontig -c 10000 -o 0 --merge_last '
         expect_command += '-b temp.bed > concoct_output_dir/split_contigs.fa && python /kb/deployment/bin/CONCOCT/scripts/concoct_coverage_table.py '
         expect_command += 'temp.bed concoct_output_dir/*.sorted.bam > concoct_output_dir/coverage_table.tsv && python /kb/deployment/bin/CONCOCT/bin/concoct '
         expect_command += '--composition_file concoct_output_dir/split_contigs.fa -l 3000 -b concoct_output_dir '
-        expect_command += '--coverage_file concoct_output_dir/coverage_table.tsv -t 16 -k 4 -c 400 -i 500 && python '
+        expect_command += '--coverage_file concoct_output_dir/coverage_table.tsv -t 16 -k 4 -c 400 -i 500 --total_percentage_pca 90 --no_cov_normalization --no_total_coverage && python '
         expect_command += '/kb/deployment/bin/CONCOCT/scripts/merge_cutup_clustering.py concoct_output_dir/clustering_gt3000.csv '
         expect_command += '> concoct_output_dir/clustering_merged.csv && mkdir '
         expect_command += 'concoct_output_dir/final_bins && python /kb/deployment/bin/CONCOCT/scripts/extract_fasta_bins.py '
@@ -237,6 +240,9 @@ class kb_concoctTest(unittest.TestCase):
                                              'kmer_size': 4,
                                              'max_clusters_for_vgmm': 400,
                                              'max_iterations_for_vgmm': 500,
+                                             'total_percentage_pca': 90,
+                                             'no_cov_normalization': '--no_cov_normalization',
+                                             'no_total_coverage': '--no_total_coverage',
                                              'binned_contig_name': 'concoct_bin_obj',
                                              'reads_list': [self.int1_oldstyle_reads_ref, self.int2_oldstyle_reads_ref] })
 

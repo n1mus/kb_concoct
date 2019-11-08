@@ -41,6 +41,11 @@ module kb_concoct {
         int kmer_size;
         int max_clusters_for_vgmm;
         int max_iterations_for_vgmm;
+        int total_percentage_pca;
+        string no_cov_normalization;
+        string no_total_coverage;
+
+
 
     } ConcoctInputParams;
 

@@ -46,7 +46,7 @@ parameters :
     min_contig_length :
         ui-name : Minimum Contig Length (>1000bp)
         short-hint : minimum contig length (default 2500bp)
-        long-hint  : minimum contig length should not be less than 1500bp
+        long-hint  : minimum contig length should not be less than 1000bp
 
     contig_split_size :
         ui-name : Contig Split Size (>=5000bp)
@@ -73,10 +73,20 @@ parameters :
         short-hint : specify a maximum number of iterations for VGMM (default 500)
         long-hint  : specify a maximum number of iterations for VGMM (default 500)
 
+    total_percentage_pca :
+        ui-name : Percent of Total PCA Used (default 90)
+        short-hint : percentage of variance explained by the principal components of the combined data (default 90)
+        long-hint  : percentage of variance explained by the principal components of the combined data (default 90)
+
     no_cov_normalization :
         ui-name : Skip Coverage Normalization
         short-hint : skip coverage normalization step (default false)
         long-hint  : skip coverage normalization step (default false)
+
+    no_total_coverage :
+        ui-name : Skip Using Total Coverage
+        short-hint : skip adding total coverage to the covergae data matrix (default false)
+        long-hint  : skip adding total coverage to the covergae data matrix (default false)
 
 description : |
     <p>CONCOCT clusters metagenomic contigs into different "bins", each of which should correspond to a putative genome.</p>
