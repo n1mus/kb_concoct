@@ -78,15 +78,15 @@ parameters :
         short-hint : percentage of variance explained by the principal components of the combined data (default 90)
         long-hint  : percentage of variance explained by the principal components of the combined data (default 90)
 
-    no_cov_normalization :
-        ui-name : Skip Coverage Normalization
-        short-hint : skip coverage normalization step (default false)
-        long-hint  : skip coverage normalization step (default false)
+    # no_cov_normalization :
+    #     ui-name : Skip Coverage Normalization
+    #     short-hint : skip coverage normalization step (default false)
+    #     long-hint  : skip coverage normalization step (default false)
 
-    no_total_coverage :
-        ui-name : Skip Using Total Coverage
-        short-hint : skip adding total coverage to the covergae data matrix (default false)
-        long-hint  : skip adding total coverage to the covergae data matrix (default false)
+    # no_total_coverage :
+    #     ui-name : Skip Using Total Coverage
+    #     short-hint : skip adding total coverage to the covergae data matrix (default false)
+    #     long-hint  : skip adding total coverage to the covergae data matrix (default false)
 
 description : |
     <p>CONCOCT clusters metagenomic contigs into different "bins", each of which should correspond to a putative genome.</p>
