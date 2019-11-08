@@ -142,10 +142,10 @@
           "field_type": "checkbox",
           "checkbox_options": {
               "checked_value": "--no_cov_normalization",
-              "unchecked_value": " ",
-              "validate_as" : "string"
+              "unchecked_value": " "
             }
         },
+
         {
           "id": "no_total_coverage",
           "optional": true,
@@ -156,7 +156,6 @@
           "checkbox_options": {
               "checked_value": "--no_total_coverage",
               "unchecked_value": " ",
-              "validate_as" : "string"
             }
         }
     ],
