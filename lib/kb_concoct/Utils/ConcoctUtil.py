@@ -241,10 +241,8 @@ class ConcoctUtil:
         command += ' && '
         command += 'python /kb/deployment/bin/CONCOCT/scripts/concoct_coverage_table.py temp.bed concoct_output_dir/*.sorted.bam > concoct_output_dir/coverage_table.tsv'
         command += ' && '
-        # command += 'python /kb/deployment/bin/CONCOCT/bin/concoct --composition_file concoct_output_dir/split_contigs.fa -l {} -b concoct_output_dir --coverage_file concoct_output_dir/coverage_table.tsv -t {} -k {} -c {} -i {} --total_percentage_pca {} {} {}'.format(params.get('min_contig_length'),
-        #                                  self.BBMAP_THREADS,params.get('kmer_size'),params.get('max_clusters_for_vgmm'),params.get('max_iterations_for_vgmm'),params.get('total_percentage_pca'),params.get('no_cov_normalization'),params.get('no_total_coverage'))
-        command += 'python /kb/deployment/bin/CONCOCT/bin/concoct --composition_file concoct_output_dir/split_contigs.fa -l {} -b concoct_output_dir --coverage_file concoct_output_dir/coverage_table.tsv -t {} -k {} -c {} -i {} --total_percentage_pca {}'.format(params.get('min_contig_length'),
-                                         self.BBMAP_THREADS,params.get('kmer_size'),params.get('max_clusters_for_vgmm'),params.get('max_iterations_for_vgmm'),params.get('total_percentage_pca'))
+        command += 'python /kb/deployment/bin/CONCOCT/bin/concoct --composition_file concoct_output_dir/split_contigs.fa -l {} -b concoct_output_dir --coverage_file concoct_output_dir/coverage_table.tsv -t {} -k {} -c {} -i {} --total_percentage_pca {} {} {}'.format(params.get('min_contig_length'),
+                                         self.BBMAP_THREADS,params.get('kmer_size'),params.get('max_clusters_for_vgmm'),params.get('max_iterations_for_vgmm'),params.get('total_percentage_pca'),params.get('no_cov_normalization'),params.get('no_total_coverage'))
         command += ' && '
         command += 'python /kb/deployment/bin/CONCOCT/scripts/merge_cutup_clustering.py concoct_output_dir/clustering_gt{}.csv > concoct_output_dir/clustering_merged.csv'.format(params.get('min_contig_length'))
         command += ' && '

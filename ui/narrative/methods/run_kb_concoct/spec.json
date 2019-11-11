@@ -132,6 +132,30 @@
               "max_int" : 100,
               "validate_as" : "int"
             }
+        },
+        {
+          "id": "no_cov_normalization",
+          "optional": true,
+          "advanced": true,
+          "allow_multiple": false,
+          "default_values": [ " " ],
+          "field_type": "checkbox",
+          "checkbox_options": {
+              "checked_value": "--no_cov_normalization",
+              "unchecked_value": " "
+            }
+        },
+        {
+          "id": "no_total_coverage",
+          "optional": true,
+          "advanced": true,
+          "allow_multiple": false,
+          "default_values": [ " " ],
+          "field_type": "checkbox",
+          "checkbox_options": {
+              "checked_value": "--no_total_coverage",
+              "unchecked_value": " ",
+            }
         }
     ],
     "behavior": {
@@ -185,6 +209,14 @@
                 {
                     "input_parameter": "total_percentage_pca",
                     "target_property": "total_percentage_pca"
+                },
+                {
+                    "input_parameter": "no_cov_normalization",
+                    "target_property": "no_cov_normalization"
+                },
+                {
+                    "input_parameter": "no_total_coverage",
+                    "target_property": "no_total_coverage"
                 }
             ],
             "output_mapping": [
