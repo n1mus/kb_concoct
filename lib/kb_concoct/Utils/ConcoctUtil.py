@@ -233,7 +233,10 @@ class ConcoctUtil:
         generate_command: generate concoct params
         """
 
-        # needed to get checkbox for UI to work with string objects
+        # needed to get checkbox for UI to work with string objects, for some reason strings are converted to numerics when running inside KBase UI.
+        parameter_no_total_coverage = params.get('no_total_coverage')
+        parameter_no_cov_normalization = params.get('no_cov_normalization')
+
         if params.get('no_total_coverage') is 1:
             parameter_no_total_coverage = '--no_total_coverage'
         elif params.get('no_total_coverage') is 0:
