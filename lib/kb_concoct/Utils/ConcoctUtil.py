@@ -240,9 +240,10 @@ class ConcoctUtil:
             parameter_no_total_coverage = ' '
 
         if params.get('parameter_no_cov_normalization') is 1:
-            parameter_no_total_coverage = '--parameter_no_cov_normalization'
+            parameter_no_cov_normalization = '--parameter_no_cov_normalization'
         elif params.get('parameter_no_cov_normalization') is 0:
-            parameter_no_total_coverage = ' '
+            parameter_no_cov_normalization = ' '
+
 
         print("\n\nRunning generate_concoct_command")
 
