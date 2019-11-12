@@ -167,6 +167,7 @@ class ConcoctUtil:
         sam = os.path.basename(fastq) + '.sam'
         sam = os.path.join(result_directory, sam)
         sorted_bam = sam + '.sorted.bam'
+        print("task_params are: " + str(task_params['read_mapping_tool']))
 
         if task_params['read_mapping_tool'] is 'bbmap':
             command = '/bin/bash bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} mappedonly nodisk overwrite'.format(self.BBMAP_MEM,self.BBMAP_THREADS,assembly_clean,fastq,sam)
