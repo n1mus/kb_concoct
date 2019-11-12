@@ -18,13 +18,9 @@ RUN git clone https://github.com/BinPro/CONCOCT && cd /CONCOCT && \
     cd .. && \
     cp -R CONCOCT /kb/deployment/bin/CONCOCT
 
-# Editing one of the CONCOCT utility scripts to give bins consistent names (instead of starting with a number)
-# Right now, this is also a hack to use the existing MetagenomeUtils functions, which are overly geared for MaxBin2 results - need to fix!
-# RUN sh -c "sed -i 's/{0}.fa/concoct-bin_{0}.fa/' /kb/deployment/bin/CONCOCT/scripts/extract_fasta_bins.py"
-
 WORKDIR /kb/module/lib/kb_concoct/bin/
 
-RUN wget https://github.com/lh3/minimap2/releases/download/v2.17/minimap2-2.17.tar.bz2 && tar -xvf minimap2-* && cd minimap2* && make
+RUN wget https://github.com/lh3/minimap2/releases/download/v2.17/minimap2-2.17.tar.bz2 && tar -xvf minimap2-* && cd minimap2* && make && cd ../ && rm minimap2-2.17.tar.bz2
 
 
 COPY ./ /kb/module
