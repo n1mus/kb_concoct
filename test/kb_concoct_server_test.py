@@ -200,6 +200,7 @@ class kb_concoctTest(unittest.TestCase):
 
         input_params = {
             'contig_file_path': 'mycontig',
+            'read_mapping_tool': 'bbmap',
             'min_contig_length': '3000',
             'contig_split_size': '10000',
             'contig_split_overlap': '0',
@@ -234,6 +235,7 @@ class kb_concoctTest(unittest.TestCase):
         ret = self.getImpl().run_kb_concoct(self.getContext(),
                                             {'workspace_name': self.getWsName(),
                                              'assembly_ref': self.assembly_ref,
+                                             'read_mapping_tool': 'minimap2',
                                              'min_contig_length': 3000,
                                              'contig_split_size': 10000,
                                              'contig_split_overlap': 0,

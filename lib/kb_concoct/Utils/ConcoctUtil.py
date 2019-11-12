@@ -46,7 +46,7 @@ class ConcoctUtil:
         log('Start validating run_concoct params')
 
         # check for required parameters
-        for p in ['assembly_ref', 'binned_contig_name', 'workspace_name', 'reads_list']:
+        for p in ['assembly_ref', 'binned_contig_name', 'workspace_name', 'reads_list', 'read_mapping_tool']:
             if p not in params:
                 raise ValueError('"{}" parameter is required, but missing'.format(p))
 
@@ -160,22 +160,6 @@ class ConcoctUtil:
 
         task_params['read_scratch_file'] = read_scratch_path
 
-        #
-        # grab the assembly. It should already exist on 'local' node but
-        # needs to be copied over to scratch if on njsw node (assuming we're running
-        # jobs in parallel)
-        #
-
-        # if os.path.exists(task_params['contig_file_path']):
-        #     assembly =  task_params['contig_file_path']
-        #     print("FOUND ASSEMBLY ON LOCAL SCRATCH")
-        # else:
-        #     # we are on njsw so lets copy it over to scratch
-        #     assembly = self.get_contig_file(task_params['assembly_ref'])
-        #
-        # # remove spaces from fasta headers because that breaks bedtools
-        # assembly_clean = os.path.abspath(assembly).split('.fa')[0] + "_clean.fa"
-        #
         assembly_clean = self.retrieve_and_clean_assembly(task_params)
 
         fastq = read_scratch_path[0]
@@ -184,7 +168,15 @@ class ConcoctUtil:
         sam = os.path.join(result_directory, sam)
         sorted_bam = sam + '.sorted.bam'
 
-        command = '/bin/bash bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} mappedonly nodisk overwrite'.format(self.BBMAP_MEM,self.BBMAP_THREADS,assembly_clean,fastq,sam)
+        if task_params['read_mapping_tool'] is 'bbmap':
+            command = '/bin/bash bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} mappedonly nodisk overwrite'.format(self.BBMAP_MEM,self.BBMAP_THREADS,assembly_clean,fastq,sam)
+        elif task_params['read_mapping_tool'] is 'bwa':
+            command = 'bwa index {} && bwa mem -t {} {} {} > {}'.format(assembly_clean,self.BBMAP_THREADS,assembly_clean,fastq,sam)
+        elif task_params['read_mapping_tool'] is 'bowtie2':
+            bt2index = os.path.basename(assembly_clean) + '.bt2'
+            command = 'bowtie2-build -f {} --threads {} {} && bowtie2 -x {} -U {} --threads {} -S {}'.format(assembly_clean,self.BBMAP_THREADS,bt2index,bt2index,fastq,self.BBMAP_THREADS,sam)
+        elif task_params['read_mapping_tool'] is 'minimap2':
+            command = 'minimap2 -ax sr -t {} {} {} > {}'.format(self.BBMAP_THREADS,assembly_clean,fastq,sam)
 
         log('running alignment command: {}'.format(command))
         out,err = self.run_command(command)
@@ -417,6 +409,7 @@ class ConcoctUtil:
 
         return report_output
 
+
     def createDictFromDepthfile(self, depth_file_path):
         # keep contig order (required by metabat2)
         depth_file_dict = {}
@@ -486,36 +479,23 @@ class ConcoctUtil:
 
         depth_file_path = self.generate_make_coverage_table_command(params)
 
-        #depth_file_path = self.generate_alignment_bams(params)
-
-
-        #depth_file_path = metabat_runner.generate_alignment_bams(params)[1]
-
         depth_dict = self.createDictFromDepthfile(depth_file_path)
+
 
         #run concoct
         command = self.generate_concoct_command(params)
-
         self.run_command(command)
-
 
         #run summary utilities
         command = self.generate_summary_utils_command(params)
-
         self.run_command(command)
 
-
-
-
+        #file handling and management
         os.chdir(cwd)
         log('changing working dir to {}'.format(cwd))
 
         log('Saved result files to: {}'.format(result_directory))
         log('Generated files:\n{}'.format('\n'.join(os.listdir(result_directory))))
-
-
-
-        print(str(os.path.join(result_directory,self.CONCOCT_BIN_DIR)))
 
         generate_binned_contig_param = {
             'file_directory': os.path.join(result_directory,self.CONCOCT_BIN_DIR),

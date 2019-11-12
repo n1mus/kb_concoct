@@ -35,6 +35,7 @@ module kb_concoct {
         list<obj_ref> reads_list;
 
         int thread;
+        string read_mapping_tool;
         int min_contig_length;
         int contig_split_size;
         int contig_split_overlap;

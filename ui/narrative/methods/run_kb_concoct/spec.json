@@ -1,5 +1,5 @@
 {
-    "ver": "1.1.0",
+    "ver": "1.2.0",
     "authors": [
         "seanjungbluth"
     ],
@@ -43,6 +43,42 @@
             "field_type" : "text",
             "text_options" : {
               "valid_ws_types" : ["KBaseFile.PairedEndLibrary", "KBaseFile.SingleEndLibrary", "KBaseAssembly.PairedEndLibrary", "KBaseAssembly.SingleEndLibrary"]
+            }
+        },
+        {
+            "id": "read_mapping_tool",
+            "optional": false,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "bowtie2" ],
+            "field_type": "dropdown",
+            "dropdown_options": {
+                "options": [
+                    {
+                        "value": "bbmap",
+                        "display": "BBMap read mapper",
+                        "id": "bbmap",
+                        "ui_name": "BBMap read mapper"
+                    },
+                    {
+                        "value": "bwa",
+                        "display": "bwa read mapper",
+                        "id": "bwa",
+                        "ui_name": "bwa read mapper"
+                    },
+                    {
+                        "value": "bowtie2",
+                        "display": "Bowtie2 read mapper",
+                        "id": "bowtie2",
+                        "ui_name": "Bowtie2 read mapper"
+                    },
+                    {
+                        "value": "minimap2",
+                        "display": "Minimap2 read mapper",
+                        "id": "minimap2",
+                        "ui_name": "Minimap2 read mapper"
+                    }
+                ]
             }
         },
         {
@@ -181,6 +217,10 @@
                     "input_parameter": "reads_list",
                     "target_type_transform": "list<ref>",
                     "target_property": "reads_list"
+                },
+                {
+                    "input_parameter": "read_mapping_tool",
+                    "target_property": "read_mapping_tool"
                 },
                 {
                     "input_parameter": "min_contig_length",

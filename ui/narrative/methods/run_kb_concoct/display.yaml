@@ -43,6 +43,11 @@ parameters :
         short-hint : A list of reads object (PairedEndLibrary/SingleEndLibrary) upon which CONCOCT will be run
         long-hint  : A list of reads object (PairedEndLibrary/SingleEndLibrary) upon which CONCOCT will be run
 
+    read_mapping_tool :
+        ui-name : Read Mapping Tool
+        short-hint : tool to use for read mapping (default bowtie2)
+        long-hint  : tool to use for read mapping - options bbmap, bwa, bowtie2, minimap2 - (default bowtie2)
+
     min_contig_length :
         ui-name : Minimum Contig Length (>1000bp)
         short-hint : minimum contig length (default 2500bp)

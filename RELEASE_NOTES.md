@@ -1,6 +1,10 @@
 # kb_concoct release notes
 =========================================
 
+1.2.0
+-----
+* Added multiple read mapping software (bowtie2, minimap2, and bwa), in addition to existing bbmap as selectable options
+
 1.1.0
 -----
 * Added parameter options for: no_cov_normalization, no_total_coverage, and total_percentage_pca

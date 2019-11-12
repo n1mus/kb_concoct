@@ -8,7 +8,7 @@ MAINTAINER Sean Jungbluth <sjungbluth@lbl.gov>
 
 
 # To install all the dependencies
-RUN apt-get update && apt-get install -y libgsl0-dev git zip unzip bedtools python-pip && \
+RUN apt-get update && apt-get install -y libgsl0-dev git zip unzip bedtools bwa bowtie2 wget python-pip && \
     apt-get install -y r-base r-cran-gplots
 
 # To download the CONCOCT software from Github and install it and its requirements
@@ -22,17 +22,25 @@ RUN git clone https://github.com/BinPro/CONCOCT && cd /CONCOCT && \
 # Right now, this is also a hack to use the existing MetagenomeUtils functions, which are overly geared for MaxBin2 results - need to fix!
 # RUN sh -c "sed -i 's/{0}.fa/concoct-bin_{0}.fa/' /kb/deployment/bin/CONCOCT/scripts/extract_fasta_bins.py"
 
+WORKDIR /kb/module/lib/kb_concoct/bin/
+
+RUN wget https://github.com/lh3/minimap2/releases/download/v2.17/minimap2-2.17.tar.bz2 && tar -xvf minimap2-* && cd minimap2* && make
+
 
 COPY ./ /kb/module
 RUN mkdir -p /kb/module/work
 RUN chmod -R a+rw /kb/module
+
+
 
 WORKDIR /kb/module
 
 ENV PATH=/kb/module/lib/kb_concoct/bin:$PATH
 ENV PATH=/kb/module/lib/kb_concoct/bin/bbmap:$PATH
 ENV PATH=/kb/module/lib/kb_concoct/bin/samtools/bin:$PATH
+ENV PATH=/kb/module/lib/kb_concoct/bin/minimap2-2.17/:$PATH
 ENV PATH=/kb/deployment/bin/CONCOCT/bin:/kb/deployment/bin/CONCOCT/scripts:$PATH
+
 
 RUN make all
 
