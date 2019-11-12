@@ -56,27 +56,27 @@
                 "options": [
                     {
                         "value": "bbmap",
-                        "display": "BBMap read mapper",
+                        "display": "BBMap",
                         "id": "bbmap",
-                        "ui_name": "BBMap read mapper"
+                        "ui_name": "BBMap"
                     },
                     {
                         "value": "bwa",
-                        "display": "bwa read mapper",
+                        "display": "bwa",
                         "id": "bwa",
-                        "ui_name": "bwa read mapper"
+                        "ui_name": "bwa"
                     },
                     {
                         "value": "bowtie2",
-                        "display": "Bowtie2 read mapper",
+                        "display": "Bowtie2",
                         "id": "bowtie2",
-                        "ui_name": "Bowtie2 read mapper"
+                        "ui_name": "Bowtie2"
                     },
                     {
                         "value": "minimap2",
-                        "display": "Minimap2 read mapper",
+                        "display": "Minimap2",
                         "id": "minimap2",
-                        "ui_name": "Minimap2 read mapper"
+                        "ui_name": "Minimap2"
                     }
                 ]
             }
