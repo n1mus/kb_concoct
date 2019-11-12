@@ -169,14 +169,14 @@ class ConcoctUtil:
         sorted_bam = sam + '.sorted.bam'
         print("task_params are: " + str(task_params['read_mapping_tool']))
 
-        if str(task_params['read_mapping_tool']) is 'bbmap':
+        if task_params['read_mapping_tool'] == 'bbmap':
             command = '/bin/bash bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} mappedonly nodisk overwrite'.format(self.BBMAP_MEM,self.BBMAP_THREADS,assembly_clean,fastq,sam)
-        elif str(task_params['read_mapping_tool']) is 'bwa':
+        elif task_params['read_mapping_tool'] == 'bwa':
             command = 'bwa index {} && bwa mem -t {} {} {} > {}'.format(assembly_clean,self.BBMAP_THREADS,assembly_clean,fastq,sam)
-        elif str(task_params['read_mapping_tool']) is 'bowtie2':
+        elif task_params['read_mapping_tool'] == 'bowtie2':
             bt2index = os.path.basename(assembly_clean) + '.bt2'
             command = 'bowtie2-build -f {} --threads {} {} && bowtie2 -x {} -U {} --threads {} -S {}'.format(assembly_clean,self.BBMAP_THREADS,bt2index,bt2index,fastq,self.BBMAP_THREADS,sam)
-        elif str(task_params['read_mapping_tool']) is 'minimap2':
+        elif task_params['read_mapping_tool'] == 'minimap2':
             command = 'minimap2 -ax sr -t {} {} {} > {}'.format(self.BBMAP_THREADS,assembly_clean,fastq,sam)
 
         log('running alignment command: {}'.format(command))
