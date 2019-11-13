@@ -14,7 +14,7 @@ from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.MetagenomeUtilsClient import MetagenomeUtils
 from installed_clients.ReadsUtilsClient import ReadsUtils
-
+from installed_clients.WorkspaceClient import Workspace
 
 def log(message, prefix_newline=False):
     """Logging function, provides a hook to suppress or redirect log messages."""
@@ -31,6 +31,7 @@ class ConcoctUtil:
         self.callback_url = config['SDK_CALLBACK_URL']
         self.scratch = config['scratch']
         self.shock_url = config['shock-url']
+        self.ws_url = config['workspace-url']
         self.dfu = DataFileUtil(self.callback_url)
         self.ru = ReadsUtils(self.callback_url)
         self.au = AssemblyUtil(self.callback_url)
@@ -41,8 +42,7 @@ class ConcoctUtil:
         """
         Example: get_obj_id("MAG-QC_Archaea.SAGs.Prokka")
         """
-        from biokbase.workspace.client import Workspace
-        import os
+
         ws = Workspace('https://appdev.kbase.us/services/ws')
         ws_name = os.environ['KB_WORKSPACE_ID']
         try:
@@ -58,8 +58,17 @@ class ConcoctUtil:
         """
         from biokbase.workspace.client import Workspace
         import os
-        ws = Workspace('https://appdev.kbase.us/services/ws')
+
+        ws = Workspace(self.ws_url)
         return ws.get_objects([{"ref":object_id}])[0]
+
+    def get_object_type(object_id):
+        """
+        Fetch data from the workspace. Example1: get_object_data(get_obj_id("MAG-QC_Archaea.SAGs.RAST")); Example2: get_object_data(u'43402/2132/1')
+        """
+
+        ws = Workspace(self.ws_url)
+        return ws.get_objects([{"ref":object_id, "no-data": 1}])[0]['info'][2]
 
 
     def validate_run_concoct_params(self, params):
