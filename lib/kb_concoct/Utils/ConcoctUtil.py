@@ -24,7 +24,7 @@ def log(message, prefix_newline=False):
 class ConcoctUtil:
     CONCOCT_TOOLKIT_PATH = '/kb/deployment/bin/CONCOCT/bin'
     CONCOCT_BIN_DIR = 'final_bins'
-    BBMAP_THREADS=16
+    MAPPING_THREADS=16
     BBMAP_MEM='30g'
 
     def __init__(self, config):
@@ -35,6 +35,31 @@ class ConcoctUtil:
         self.ru = ReadsUtils(self.callback_url)
         self.au = AssemblyUtil(self.callback_url)
         self.mgu = MetagenomeUtils(self.callback_url)
+
+    # Function to return object ID based on object name
+    def get_obj_id(obj_name):
+        """
+        Example: get_obj_id("MAG-QC_Archaea.SAGs.Prokka")
+        """
+        from biokbase.workspace.client import Workspace
+        import os
+        ws = Workspace('https://appdev.kbase.us/services/ws')
+        ws_name = os.environ['KB_WORKSPACE_ID']
+        try:
+            obj_id = ws.get_object_info3({'objects': [{'workspace': ws_name, 'name': obj_name}]})['paths'][0][0]
+            return obj_id
+        except:
+            return False
+
+    # Function to return object data based on object ID
+    def get_object_data(object_id):
+        """
+        Fetch data from the workspace. Example1: get_object_data(get_obj_id("MAG-QC_Archaea.SAGs.RAST")); Example2: get_object_data(u'43402/2132/1')
+        """
+        from biokbase.workspace.client import Workspace
+        import os
+        ws = Workspace('https://appdev.kbase.us/services/ws')
+        return ws.get_objects([{"ref":object_id}])[0]
 
 
     def validate_run_concoct_params(self, params):
@@ -158,11 +183,18 @@ class ConcoctUtil:
         # this should return a list of 1 fastq file path on scratch
         read_scratch_path = self.stage_reads_list_file(reads_list)
 
+
         task_params['read_scratch_file'] = read_scratch_path
+
 
         assembly_clean = self.retrieve_and_clean_assembly(task_params)
 
         fastq = read_scratch_path[0]
+        #reads_type = self.get_obj_id(str(os.path.basename(fastq)[1]))
+        print(os.path.basename(fastq))
+        #reads_type = self.get_object_data(self.get_obj_id(os.path.basename(fastq)[1])).values()[0][2]
+        #print("read_type is " + reads_type)
+
         result_directory = task_params['result_directory']
         sam = os.path.basename(fastq) + '.sam'
         sam = os.path.join(result_directory, sam)
@@ -170,14 +202,14 @@ class ConcoctUtil:
         print("task_params are: " + str(task_params['read_mapping_tool']))
 
         if task_params['read_mapping_tool'] == 'bbmap':
-            command = '/bin/bash bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} mappedonly nodisk overwrite'.format(self.BBMAP_MEM,self.BBMAP_THREADS,assembly_clean,fastq,sam)
+            command = '/bin/bash bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} mappedonly nodisk overwrite'.format(self.BBMAP_MEM,self.MAPPING_THREADS,assembly_clean,fastq,sam)
         elif task_params['read_mapping_tool'] == 'bwa':
-            command = 'bwa index {} && bwa mem -t {} {} {} > {}'.format(assembly_clean,self.BBMAP_THREADS,assembly_clean,fastq,sam)
+            command = 'bwa index {} && bwa mem -t {} {} {} > {}'.format(assembly_clean,self.MAPPING_THREADS,assembly_clean,fastq,sam)
         elif task_params['read_mapping_tool'] == 'bowtie2':
             bt2index = os.path.basename(assembly_clean) + '.bt2'
-            command = 'bowtie2-build -f {} --threads {} {} && bowtie2 -x {} -U {} --threads {} -S {}'.format(assembly_clean,self.BBMAP_THREADS,bt2index,bt2index,fastq,self.BBMAP_THREADS,sam)
+            command = 'bowtie2-build -f {} --threads {} {} && bowtie2 -x {} -U {} --threads {} -S {}'.format(assembly_clean,self.MAPPING_THREADS,bt2index,bt2index,fastq,self.MAPPING_THREADS,sam)
         elif task_params['read_mapping_tool'] == 'minimap2':
-            command = 'minimap2 -ax sr -t {} {} {} > {}'.format(self.BBMAP_THREADS,assembly_clean,fastq,sam)
+            command = 'minimap2 -ax sr -t {} {} {} > {}'.format(self.MAPPING_THREADS,assembly_clean,fastq,sam)
 
         log('running alignment command: {}'.format(command))
         out,err = self.run_command(command)
@@ -250,7 +282,7 @@ class ConcoctUtil:
         command += 'python /kb/deployment/bin/CONCOCT/scripts/concoct_coverage_table.py temp.bed concoct_output_dir/*.sorted.bam > concoct_output_dir/coverage_table.tsv'
         command += ' && '
         command += 'python /kb/deployment/bin/CONCOCT/bin/concoct --composition_file concoct_output_dir/split_contigs.fa -l {} -b concoct_output_dir --coverage_file concoct_output_dir/coverage_table.tsv -t {} -k {} -c {} -i {} --total_percentage_pca {} {} {}'.format(params.get('min_contig_length'),
-                                         self.BBMAP_THREADS,params.get('kmer_size'),params.get('max_clusters_for_vgmm'),params.get('max_iterations_for_vgmm'),params.get('total_percentage_pca'),parameter_no_cov_normalization,parameter_no_total_coverage)
+                                         self.MAPPING_THREADS,params.get('kmer_size'),params.get('max_clusters_for_vgmm'),params.get('max_iterations_for_vgmm'),params.get('total_percentage_pca'),parameter_no_cov_normalization,parameter_no_total_coverage)
         command += ' && '
         command += 'python /kb/deployment/bin/CONCOCT/scripts/merge_cutup_clustering.py concoct_output_dir/clustering_gt{}.csv > concoct_output_dir/clustering_merged.csv'.format(params.get('min_contig_length'))
         command += ' && '
