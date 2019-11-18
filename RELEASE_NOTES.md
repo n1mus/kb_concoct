@@ -1,6 +1,18 @@
 # kb_concoct release notes
 =========================================
 
+ToDo
+-----
+* Add kb_parallels support
+
+1.3.0
+-----
+* Refactored most code for kb_concoctTest, streamlined variable and function usage
+* Added new method (stats.sh) to populate summary files, exposed many other statistics for genome bin summary files
+* Removed bash script dependency
+* Added support for multiple read file inputs
+* Added auto-detection of read file type for read mapping - single vs paired-end interleaved file
+
 1.2.0
 -----
 * Added multiple read mapping software (bowtie2, minimap2, and bwa), in addition to existing bbmap as selectable options

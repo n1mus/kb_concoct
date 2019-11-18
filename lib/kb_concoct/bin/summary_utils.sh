@@ -5,6 +5,8 @@ echo "Running summary_utils.sh script"
 BINS='final_bins'
 BINSDIR='concoct_output_dir'
 
+EXPORT_BINS="$1" # 0 or 1 - (no or yes)
+
 ### ---------------------- ###
 ###        Functions       ###
 testRun()
@@ -27,7 +29,7 @@ set -x
 # so this is not necessary.
 cd $BINSDIR
 
-echo -e "Bin name\tCompleteness\tGenome size\tGC content" > $BINS/notreal.summary
+#echo -e "Bin name\tCompleteness\tGenome size\tGC content" > $BINS/notreal.summary
 #testRun "create $BINS/notreal.summary" $?
 
 # Unfortunately, the MetagenomeUtils function that loads the bins into "binned_contig_obj_ref"
@@ -38,26 +40,31 @@ echo -e "Bin name\tCompleteness\tGenome size\tGC content" > $BINS/notreal.summar
 # if we have bins, change their names so that MetagenomeUtils will
 # recognize them.
 # Test that metabat produced some bins
-BINSARRAY=($(find $BINS -name "*.fa"))
-testRun "find $BINS -name '*.fa'" $?
-COUNT=0
-for i in ${BINSARRAY[@]}; do
-    if [[ $i =~ "unbinned" ]]; then
-      newID="unbinned"
-    else
-      COUNT=$((COUNT+1))
-      binID=$(basename $i)
-      binID=${binID%.fa}
-      binID=${binID#bin.}
-      newID=$(printf "%03d\n" $binID)
-    fi
 
-    mv $i $BINS/bin.$newID.fasta
+if [ "$EXPORT_BINS" -eq "1" ]; then
+  BINSARRAY=($(find $BINS -name "*.fa"))
+  testRun "find $BINS -name '*.fa'" $?
+  COUNT=0
+  for i in ${BINSARRAY[@]}; do
+      if [[ $i =~ "unbinned" ]]; then
+        newID="unbinned"
+      else
+        COUNT=$((COUNT+1))
+        binID=$(basename $i)
+        binID=${binID%.fa}
+        binID=${binID#bin.}
+        newID=$(printf "%03d\n" $binID)
+      fi
 
-	# lets populate the .summary file (this is a work around until MetagenomeUtils gets fixed)
-	# The collumns are binID, read coverage, Total Contig Length, GC%
-    echo -e "bin.$newID.fasta\t0\t0\t0" >> $BINS/notreal.summary
-done
+      mv $i $BINS/bin.$newID.fasta
+
+  	# lets populate the .summary file (this is a work around until MetagenomeUtils gets fixed)
+  	# The collumns are binID, read coverage, Total Contig Length, GC%
+      echo -e "bin.$newID.fasta\t0\t0\t0" >> $BINS/notreal.summary
+  done
+else
+  echo "Not exporting anys bins using summary_utils.sh"
+fi
 
 # cleanup large files
 #rm -r $BINSDIR

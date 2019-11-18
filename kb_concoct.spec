@@ -45,6 +45,7 @@ module kb_concoct {
         int total_percentage_pca;
         string no_cov_normalization;
         string no_total_coverage;
+        string write_bins_to_fasta_files;
 
 
     } ConcoctInputParams;

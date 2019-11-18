@@ -47,7 +47,7 @@
         },
         {
             "id": "read_mapping_tool",
-            "optional": false,
+            "optional": true,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "bowtie2" ],
@@ -192,6 +192,18 @@
               "checked_value": "--no_total_coverage",
               "unchecked_value": " "
             }
+        },
+        {
+          "id": "write_bins_to_fasta_files",
+          "optional": true,
+          "advanced": true,
+          "allow_multiple": false,
+          "default_values": [ 1 ],
+          "field_type": "checkbox",
+          "checkbox_options": {
+              "checked_value": "1",
+              "unchecked_value": "0"
+            }
         }
     ],
     "behavior": {
@@ -257,6 +269,10 @@
                 {
                     "input_parameter": "no_total_coverage",
                     "target_property": "no_total_coverage"
+                },
+                {
+                    "input_parameter": "write_bins_to_fasta_files",
+                    "target_property": "write_bins_to_fasta_files"
                 }
             ],
             "output_mapping": [

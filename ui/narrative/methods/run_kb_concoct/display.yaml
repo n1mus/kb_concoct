@@ -46,7 +46,7 @@ parameters :
     read_mapping_tool :
         ui-name : Read Mapping Tool
         short-hint : tool to use for read mapping (default bowtie2)
-        long-hint  : tool to use for read mapping - options bbmap, bwa, bowtie2, minimap2 - (default bowtie2)
+        long-hint  : tool to use for read mapping - options BBmap, Bowtie2, BWA-MEM, minimap2 - (default bowtie2)
 
     min_contig_length :
         ui-name : Minimum Contig Length (>1000bp)
@@ -92,6 +92,11 @@ parameters :
         ui-name : Skip Using Total Coverage
         short-hint : skip adding total coverage to the covergae data matrix (default false)
         long-hint  : skip adding total coverage to the covergae data matrix (default false)
+
+    write_bins_to_fasta_files :
+        ui-name : Write Bins to fasta Files
+        short-hint : write genome bins to fasta files, in addition to creating a new BinnedContig object (default yes)
+        long-hint  : write genome bins to fasta files, in addition to creating a new BinnedContig object (default yes)
 
 description : |
     <p>CONCOCT clusters metagenomic contigs into different "bins", each of which should correspond to a putative genome.</p>
