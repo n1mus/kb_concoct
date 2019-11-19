@@ -245,39 +245,9 @@ class kb_concoctTest(unittest.TestCase):
                                              'total_percentage_pca': 90,
                                              'no_cov_normalization': '--no_cov_normalization',
                                              'no_total_coverage': '--no_total_coverage',
-                                             'write_bins_to_fasta_files': 1,
                                              'binned_contig_name': 'concoct_bin_obj',
                                              'reads_list': [self.int1_oldstyle_reads_ref] })
 #                                             'reads_list': [self.int1_oldstyle_reads_ref, self.int2_oldstyle_reads_ref] })
-
-#
-#     def test_run_concoct_no_write_bins(self):
-#         method_name = 'test_run_concoct'
-#         print ("\n=================================================================")
-#         print ("RUNNING "+method_name+"()")
-#         print ("=================================================================\n")
-#
-#         # concoct should run to completion here
-#         ret = self.getImpl().run_kb_concoct(self.getContext(),
-#                                             {'workspace_name': self.getWsName(),
-#                                              'assembly_ref': self.assembly_ref,
-#                                              'read_mapping_tool': 'minimap2',
-#                                              'min_contig_length': 3000,
-#                                              'contig_split_size': 10000,
-#                                              'contig_split_overlap': 0,
-#                                              'kmer_size': 4,
-#                                              'max_clusters_for_vgmm': 400,
-#                                              'max_iterations_for_vgmm': 500,
-#                                              'total_percentage_pca': 90,
-#                                              'no_cov_normalization': '--no_cov_normalization',
-#                                              'no_total_coverage': '--no_total_coverage',
-#                                              'write_bins_to_fasta_files': 0,
-#                                              'binned_contig_name': 'concoct_bin_obj',
-#                                              'reads_list': [self.int1_oldstyle_reads_ref] })
-# #                                             'reads_list': [self.int1_oldstyle_reads_ref, self.int2_oldstyle_reads_ref] })
-#
-
-
 
 
 

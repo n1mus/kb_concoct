@@ -207,7 +207,6 @@ class ConcoctUtil:
         log('Generated generate_stats_for_genome_bins command: {}'.format(command))
 
         return {'n_scaffolds': n_scaffolds, 'n_contigs': n_contigs, 'scaf_bp': scaf_bp, 'contig_bp': contig_bp, 'gap_pct': gap_pct, 'scaf_N50': scaf_N50, 'scaf_L50': scaf_L50, 'ctg_N50': ctg_N50, 'scaf_N90': scaf_N90, 'ctg_N90': ctg_N90, 'ctg_L90': ctg_L90, 'scaf_max': scaf_max, 'ctg_max': ctg_max, 'scaf_n_gt50K': scaf_n_gt50K, 'gc_avg': gc_avg, 'gc_std':gc_std}
-        # return {'i': i, 'card': card, 'other_field': other_field, ...}
 
 
 
@@ -396,18 +395,17 @@ class ConcoctUtil:
 
         return command
 
-    def generate_summary_utils_command(self, task_params):
-        """
-        generate_command: generate summary utils command
-        """
-        log("\n\nRunning generate_summary_utils_command")
-        if task_params['write_bins_to_fasta_files'] == 1:
-            command = "/bin/bash /kb/module/lib/kb_concoct/bin/summary_utils.sh 1"
-        else:
-            command = "/bin/bash /kb/module/lib/kb_concoct/bin/summary_utils.sh 0"
-        log('Generated summary_utils command: {}'.format(command))
 
-        return command
+    def rename_and_standardize_bin_names(self, task_params):
+        """
+        generate_command: generate renamed bins
+        """
+        log("\n\nRunning rename_and_standardize_bin_names")
+        path_to_concoct_result_bins = os.path.abspath(self.CONCOCT_RESULT_DIRECTORY) + '/' + self.CONCOCT_BIN_RESULT_DIR + '/'
+        for dirname, subdirs, files in os.walk(path_to_concoct_result_bins):
+            for file in files:
+                if file.endswith('.fa'):
+                    os.rename(os.path.abspath(path_to_concoct_result_bins) + '/' + file, os.path.abspath(path_to_concoct_result_bins) + '/bin.' + file.split('.fa')[0].zfill(3) + '.fasta')
 
 
     def make_binned_contig_summary_file_for_binning_apps(self, task_params):
@@ -423,11 +421,11 @@ class ConcoctUtil:
             f.write("Bin name\tCompleteness\tGenome size\tGC content\n")
             for dirname, subdirs, files in os.walk(path_to_concoct_result_bins):
                 for file in files:
-                    if file.endswith('.fa'):
+                    if file.endswith('.fasta'):
                          genome_bin_fna_file = os.path.join(self.CONCOCT_BIN_RESULT_DIR, file)
-                         bbstats_output_file = os.path.join(self.scratch, self.CONCOCT_RESULT_DIRECTORY, genome_bin_fna_file).split('.fa')[0] + ".bbstatsout"
+                         bbstats_output_file = os.path.join(self.scratch, self.CONCOCT_RESULT_DIRECTORY, genome_bin_fna_file).split('.fasta')[0] + ".bbstatsout"
                          bbstats_output = self.generate_stats_for_genome_bins(task_params, genome_bin_fna_file, bbstats_output_file)
-                         #f.write('{}\t{}\t{}\t0\n'.format(genome_bin_fna_file.split("/")[-1], bbstats_output['gc_avg'],bbstats_output['contig_bp']))
+                         f.write('{}\t0\t{}\t{}\n'.format(genome_bin_fna_file.split("/")[-1], bbstats_output['contig_bp'],bbstats_output['gc_avg']))
         f.close()
         log('Finished make_binned_contig_summary_file_for_binning_apps function')
 
@@ -644,25 +642,14 @@ class ConcoctUtil:
         command = self.generate_concoct_post_clustering_merging_command(task_params)
         self.run_command(command)
 
-        if task_params['write_bins_to_fasta_files'] == 1:
-            # run extract bins command
-            command = self.generate_concoct_extract_fasta_bins_command(task_params)
-            self.run_command(command)
-        else:
-            log('Skipping the creation of bin fasta files')
-
-        self.make_binned_contig_summary_file_for_binning_apps(task_params)
-
-        # run summary utilities and fasta renaming
-        command = self.generate_summary_utils_command(task_params)
+        # run extract bins command
+        command = self.generate_concoct_extract_fasta_bins_command(task_params)
         self.run_command(command)
 
+        # run fasta renaming
+        self.rename_and_standardize_bin_names(task_params)
 
-
-        #
-        # # run summary utilities and fasta renaming
-        # command = self.generate_summary_utils_command(task_params)
-        # self.run_command(command)
+        self.make_binned_contig_summary_file_for_binning_apps(task_params)
 
 
         # file handling and management
