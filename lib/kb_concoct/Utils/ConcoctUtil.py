@@ -183,7 +183,6 @@ class ConcoctUtil:
         command = '/bin/bash stats.sh in={} format=3 > {}'.format(genome_bin_fna_file, bbstats_output_file)
         self.run_command(command)
         bbstats_output = open(bbstats_output_file, 'r').readlines()[1]
-        print('bbstats_output {}'.format(bbstats_output))
         n_scaffolds = bbstats_output.split('\t')[0]
         n_contigs = bbstats_output.split('\t')[1]
         scaf_bp = bbstats_output.split('\t')[2]
@@ -201,8 +200,8 @@ class ConcoctUtil:
         ctg_max = bbstats_output.split('\t')[14]
         scaf_n_gt50K = bbstats_output.split('\t')[15]
         scaf_pct_gt50K = bbstats_output.split('\t')[16]
-        gc_avg = bbstats_output.split('\t')[17]
-        gc_std = bbstats_output.split('\t')[18]
+        gc_avg = bbstats_output.split('\t')[17] # * 100
+        gc_std = bbstats_output.split('\t')[18] # * 100
 
         log('Generated generate_stats_for_genome_bins command: {}'.format(command))
 
@@ -211,6 +210,20 @@ class ConcoctUtil:
 
 
     def run_read_mapping_unpaired_mode(self, task_params, assembly_clean, fastq, sam):
+        if task_params['read_mapping_tool'] == 'bbmap':
+            command = '/bin/bash bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} mappedonly nodisk overwrite'.format(self.BBMAP_MEM, self.MAPPING_THREADS, assembly_clean, fastq, sam)
+        elif task_params['read_mapping_tool'] == 'bwa':
+            command = 'bwa index {} && bwa mem -t {} {} {} > {}'.format(assembly_clean, self.MAPPING_THREADS, assembly_clean, fastq, sam)
+        elif task_params['read_mapping_tool'] == 'bowtie2':
+            bt2index = os.path.basename(assembly_clean) + '.bt2'
+            command = 'bowtie2-build -f {} --threads {} {} && bowtie2 -x {} -U {} --threads {} -S {}'.format(assembly_clean, self.MAPPING_THREADS, bt2index, bt2index, fastq, self.MAPPING_THREADS, sam)
+        elif task_params['read_mapping_tool'] == 'minimap2':
+            command = 'minimap2 -ax sr -t {} {} {} > {}'.format(self.MAPPING_THREADS, assembly_clean, fastq, sam)
+        log('running alignment command: {}'.format(command))
+        out, err = self.run_command(command)
+
+
+    def run_read_mapping_interleaved_pairs_mode(self, task_params, assembly_clean, fastq, sam):
         if task_params['read_mapping_tool'] == 'bbmap':
             command = '/bin/bash bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} mappedonly nodisk overwrite'.format(self.BBMAP_MEM, self.MAPPING_THREADS, assembly_clean, fastq, sam)
         elif task_params['read_mapping_tool'] == 'bwa':
@@ -414,9 +427,8 @@ class ConcoctUtil:
         """
         log("\n\nRunning make_binned_contig_summary_file_for_binning_apps")
         path_to_concoct_result = os.path.abspath(self.CONCOCT_RESULT_DIRECTORY)
-        path_to_concoct_result_bins = '{}/{}'.format(path_to_concoct_result, self.CONCOCT_BIN_RESULT_DIR)
-        path_to_concoct_result_bins = path_to_concoct_result_bins + '/' # need to fix
-        path_to_summary_file = '{}notreal.summary'.format(path_to_concoct_result_bins) # need to fix
+        path_to_concoct_result_bins = '{}/{}/'.format(path_to_concoct_result, self.CONCOCT_BIN_RESULT_DIR)
+        path_to_summary_file = path_to_concoct_result_bins + 'binned_contig.summary'
         with open(path_to_summary_file, 'w+') as f:
             f.write("Bin name\tCompleteness\tGenome size\tGC content\n")
             for dirname, subdirs, files in os.walk(path_to_concoct_result_bins):
@@ -428,17 +440,6 @@ class ConcoctUtil:
                          f.write('{}\t0\t{}\t{}\n'.format(genome_bin_fna_file.split("/")[-1], bbstats_output['contig_bp'],bbstats_output['gc_avg']))
         f.close()
         log('Finished make_binned_contig_summary_file_for_binning_apps function')
-
-
-    def rename_bins_with_three_digit_number(self):
-        """
-        generate_command: generate rename bins command
-        """
-        log("\n\nRunning rename_bins_with_three_digit_number")
-
-
-        log('Finished rename_bins_with_three_digit_number function')
-
 
 
     def generate_output_file_list(self, result_directory):
