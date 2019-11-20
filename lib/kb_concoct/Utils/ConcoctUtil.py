@@ -133,12 +133,8 @@ class ConcoctUtil:
         # getting from workspace and writing to scratch. The 'reads' dictionary now has file paths to scratch.
         reads = self.ru.download_reads({'read_libraries': reads_list, 'interleaved': None})['files']
 
-        print("\n\n\n\n: reads variable: {}".format(reads[0]))
-        print("\n\n\n\n: reads variable: {}".format(reads[1]))
-        print("\n\n\n\n: reads variable: {}".format(reads[2]))
-        print("\n\n\n\n: reads variable: {}".format(reads[3]))
-        print("\n\n\n\n: reads variable: {}".format(reads[4]))
-        print("\n\n\n\n: reads variable: {}".format(reads[5]))
+        print("\n\n\n\n: reads variable: {}".format(reads))
+
 
         # reads_list is the list of file paths on workspace? (i.e. 12804/1/1).
         # "reads" is the hash of hashes where key is "12804/1/1" or in this case, read_obj and
