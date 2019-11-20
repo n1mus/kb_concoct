@@ -200,8 +200,8 @@ class ConcoctUtil:
         ctg_max = bbstats_output.split('\t')[14]
         scaf_n_gt50K = bbstats_output.split('\t')[15]
         scaf_pct_gt50K = bbstats_output.split('\t')[16]
-        gc_avg = bbstats_output.split('\t')[17] # * 100
-        gc_std = bbstats_output.split('\t')[18] # * 100
+        gc_avg = float(bbstats_output.split('\t')[17]) # * 100
+        gc_std = float(bbstats_output.split('\t')[18]) # * 100
 
         log('Generated generate_stats_for_genome_bins command: {}'.format(command))
 
@@ -211,7 +211,7 @@ class ConcoctUtil:
 
     def run_read_mapping_unpaired_mode(self, task_params, assembly_clean, fastq, sam):
         if task_params['read_mapping_tool'] == 'bbmap':
-            command = '/bin/bash bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} mappedonly nodisk overwrite'.format(self.BBMAP_MEM, self.MAPPING_THREADS, assembly_clean, fastq, sam)
+            command = 'bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} interleaved=false mappedonly nodisk overwrite'.format(self.BBMAP_MEM, self.MAPPING_THREADS, assembly_clean, fastq, sam) # BBMap is deterministic without the deterministic flag if using single-ended reads
         elif task_params['read_mapping_tool'] == 'bwa':
             command = 'bwa index {} && bwa mem -t {} {} {} > {}'.format(assembly_clean, self.MAPPING_THREADS, assembly_clean, fastq, sam)
         elif task_params['read_mapping_tool'] == 'bowtie2':
@@ -221,20 +221,32 @@ class ConcoctUtil:
             command = 'minimap2 -ax sr -t {} {} {} > {}'.format(self.MAPPING_THREADS, assembly_clean, fastq, sam)
         log('running alignment command: {}'.format(command))
         out, err = self.run_command(command)
+
+
+    def deinterlace_raw_reads(self, fastq):
+        fastq_forward = fastq.split('.fastq')[0] + "_forward.fastq"
+        fastq_reverse = fastq.split('.fastq')[0] + "_reverse.fastq"
+        command = 'reformat.sh in={} out1={} out2={}'.format(fastq, fastq_forward, fastq_reverse)
+        self.run_command(command)
+        return (fastq_forward, fastq_reverse)
 
 
     def run_read_mapping_interleaved_pairs_mode(self, task_params, assembly_clean, fastq, sam):
         if task_params['read_mapping_tool'] == 'bbmap':
-            command = '/bin/bash bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} mappedonly nodisk overwrite'.format(self.BBMAP_MEM, self.MAPPING_THREADS, assembly_clean, fastq, sam)
+            command = 'bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} interleaved=true mappedonly nodisk overwrite'.format(self.BBMAP_MEM, self.MAPPING_THREADS, assembly_clean, fastq, sam)
         elif task_params['read_mapping_tool'] == 'bwa':
-            command = 'bwa index {} && bwa mem -t {} {} {} > {}'.format(assembly_clean, self.MAPPING_THREADS, assembly_clean, fastq, sam)
+            (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
+            command = 'bwa index {} && bwa mem -t {} {} {} {} > {}'.format(assembly_clean, self.MAPPING_THREADS, assembly_clean, fastq_forward, fastq_reverse, sam)
         elif task_params['read_mapping_tool'] == 'bowtie2':
             bt2index = os.path.basename(assembly_clean) + '.bt2'
-            command = 'bowtie2-build -f {} --threads {} {} && bowtie2 -x {} -U {} --threads {} -S {}'.format(assembly_clean, self.MAPPING_THREADS, bt2index, bt2index, fastq, self.MAPPING_THREADS, sam)
+            command = 'bowtie2-build -f {} --threads {} {} && bowtie2 -x {} --interleaved {} --threads {} -S {}'.format(assembly_clean, self.MAPPING_THREADS, bt2index, bt2index, fastq, self.MAPPING_THREADS, sam)
         elif task_params['read_mapping_tool'] == 'minimap2':
-            command = 'minimap2 -ax sr -t {} {} {} > {}'.format(self.MAPPING_THREADS, assembly_clean, fastq, sam)
+            #need to split interleaved read file to run in paired mode
+            (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
+            command = 'minimap2 -ax sr -t {} {} {} {} > {}'.format(self.MAPPING_THREADS, assembly_clean, fastq_foward, fastq_reverse, sam)
         log('running alignment command: {}'.format(command))
         out, err = self.run_command(command)
+
 
     def convert_sam_to_sorted_and_indexed_bam(self, sam, sorted_bam):
         # create bam files from sam files
