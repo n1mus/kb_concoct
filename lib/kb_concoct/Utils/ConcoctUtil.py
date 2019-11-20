@@ -135,8 +135,8 @@ class ConcoctUtil:
 
         print("\n\n\n\n: reads variable: {}".format(reads))
         print("\n\n\n\n: reads variable: {}".format(reads.values()))
-        print("\n\n\n\n: reads variable: {}".format(reads.values()[0]))
-        print("\n\n\n\n: reads variable: {}".format(reads.values()[0][2]))
+        print("\n\n\n\n: reads variable: {}".format(reads.values()))
+        print("\n\n\n\n: reads variable: {}".format(reads.keys()))
 
 
         # reads_list is the list of file paths on workspace? (i.e. 12804/1/1).
