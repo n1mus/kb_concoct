@@ -297,7 +297,7 @@ class ConcoctUtil:
 
         for i in range(len(read_scratch_path)):
             fastq = read_scratch_path[i]
-            print("\n\n\n\n\nFastq type: " + fastq['info'] )
+            print("\n\n\n\n\nFastq type: {}".format(fastq['info'][2]))
             #fastq = read_scratch_path[0] #needs to be a loop
             #reads_type = self.get_obj_id(str(os.path.basename(fastq)[1]))
             print("OS.PATH.BASENAME0 {}".format([os.path.basename(fastq)]))
