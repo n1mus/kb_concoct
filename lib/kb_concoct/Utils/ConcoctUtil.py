@@ -200,8 +200,8 @@ class ConcoctUtil:
         ctg_max = bbstats_output.split('\t')[14]
         scaf_n_gt50K = bbstats_output.split('\t')[15]
         scaf_pct_gt50K = bbstats_output.split('\t')[16]
-        gc_avg = float(bbstats_output.split('\t')[17]) # * 100
-        gc_std = float(bbstats_output.split('\t')[18]) # * 100
+        gc_avg = float(bbstats_output.split('\t')[17]) * 100
+        gc_std = float(bbstats_output.split('\t')[18]) * 100
 
         log('Generated generate_stats_for_genome_bins command: {}'.format(command))
 
