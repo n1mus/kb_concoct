@@ -133,12 +133,12 @@ class ConcoctUtil:
         # getting from workspace and writing to scratch. The 'reads' dictionary now has file paths to scratch.
         reads = self.ru.download_reads({'read_libraries': reads_list, 'interleaved': None})['files']
 
+        print("\n\n\n\n: reads variable: {}".format(reads))
         # reads_list is the list of file paths on workspace? (i.e. 12804/1/1).
         # "reads" is the hash of hashes where key is "12804/1/1" or in this case, read_obj and
         # "files" is the secondary key. The tertiary keys are "fwd" and "rev", as well as others.
         for read_obj in reads_list:
             files = reads[read_obj]['files']    # 'files' is dictionary where 'fwd' is key of file path on scratch.
-            print('\n\n\n\n\n*****READS type: {}'.format(reads[read_obj]['info']))
             result_file_path.append(files['fwd'])
             if 'rev' in files and files['rev'] is not None:
                 result_file_path.append(files['rev'])
