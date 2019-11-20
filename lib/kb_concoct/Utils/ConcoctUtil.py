@@ -200,8 +200,8 @@ class ConcoctUtil:
         ctg_max = bbstats_output.split('\t')[14]
         scaf_n_gt50K = bbstats_output.split('\t')[15]
         scaf_pct_gt50K = bbstats_output.split('\t')[16]
-        gc_avg = float(bbstats_output.split('\t')[17]) * 100
-        gc_std = float(bbstats_output.split('\t')[18]) * 100
+        gc_avg = float(bbstats_output.split('\t')[17]) * 100 # need to figure out if correct
+        gc_std = float(bbstats_output.split('\t')[18]) * 100 # need to figure out if correct
 
         log('Generated generate_stats_for_genome_bins command: {}'.format(command))
 
@@ -297,6 +297,7 @@ class ConcoctUtil:
 
         for i in range(len(read_scratch_path)):
             fastq = read_scratch_path[i]
+            print("\n\n\n\n\nFastq type: " + fastq['info'] )
             #fastq = read_scratch_path[0] #needs to be a loop
             #reads_type = self.get_obj_id(str(os.path.basename(fastq)[1]))
             print("OS.PATH.BASENAME0 {}".format([os.path.basename(fastq)]))
@@ -325,7 +326,6 @@ class ConcoctUtil:
     def generate_make_coverage_table_command(self, task_params):
         # create the depth file for this bam
         #
-
         min_contig_length = task_params['min_contig_length']
 
         depth_file_path = os.path.join(self.scratch, str('concoct_depth.txt'))
