@@ -138,6 +138,7 @@ class ConcoctUtil:
         # "files" is the secondary key. The tertiary keys are "fwd" and "rev", as well as others.
         for read_obj in reads_list:
             files = reads[read_obj]['files']    # 'files' is dictionary where 'fwd' is key of file path on scratch.
+            print('\n\n\n\n\n*****READS type: {}'.format(files['info']))
             result_file_path.append(files['fwd'])
             if 'rev' in files and files['rev'] is not None:
                 result_file_path.append(files['rev'])
@@ -297,7 +298,6 @@ class ConcoctUtil:
 
         for i in range(len(read_scratch_path)):
             fastq = read_scratch_path[i]
-            print("\n\n\n\n\nFastq type: {}".format(str(fastq['info'])))
             #fastq = read_scratch_path[0] #needs to be a loop
             #reads_type = self.get_obj_id(str(os.path.basename(fastq)[1]))
             print("OS.PATH.BASENAME0 {}".format([os.path.basename(fastq)]))
