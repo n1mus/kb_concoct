@@ -134,7 +134,6 @@ class ConcoctUtil:
         reads = self.ru.download_reads({'read_libraries': reads_list, 'interleaved': None})['files']
 
         print("\n\n\n\n: reads variable: {}".format(reads))
-        print("\n\n\n\n: reads variable: {}".format(reads[1]))
         print("\n\n\n\n: reads variable: {}".format(type(reads)))
 
 
