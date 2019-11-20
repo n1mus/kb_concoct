@@ -134,8 +134,7 @@ class ConcoctUtil:
         reads = self.ru.download_reads({'read_libraries': reads_list, 'interleaved': None})['files']
 
         print("\n\n\n\n: reads variable: {}".format(reads))
-        print("\n\n\n\n: reads variable: {}".format(list(reads.values())[0]))
-        print("\n\n\n\n: reads variable: {}".format(list(reads.values())[13][5]))
+        print("\n\n\n\n: reads variable: {}".format(list(reads.values())[0][0]))
 
 
         # reads_list is the list of file paths on workspace? (i.e. 12804/1/1).
