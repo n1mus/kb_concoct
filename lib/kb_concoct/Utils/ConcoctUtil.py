@@ -37,42 +37,6 @@ class ConcoctUtil:
         self.au = AssemblyUtil(self.callback_url)
         self.mgu = MetagenomeUtils(self.callback_url)
 
-    # Function to return object ID based on object name
-    def get_obj_id(object_name):
-        """
-        Example: get_obj_id("MAG-QC_Archaea.SAGs.Prokka"), returns '32342/1/3'
-        """
-        ws = Workspace(self.ws_url)
-        ws_name = os.environ['KB_WORKSPACE_ID']
-        try:
-            object_id = ws.get_object_info3({'objects': [{'workspace': ws_name, 'name': object_name}]})['paths'][0][0]
-            return object_id
-        except:
-            return False
-
-    # Function to return object data based on object ID
-    def get_object_data(object_id):
-        """
-        Fetch data from the workspace.
-        Example1: get_object_data(get_obj_id("MAG-QC_Archaea.SAGs.RAST"))
-        Example2: get_object_data(u'43402/2132/1')
-        """
-        from biokbase.workspace.client import Workspace
-        import os
-
-        ws = Workspace(self.ws_url)
-        return ws.get_objects([{"ref":object_id}])[0]
-
-
-    # Function to return object type based on object ID
-    def get_object_type(object_name):
-        """
-        Fetch data type from the workspace, for example "PairedEndLibrary".
-        Example1: get_object_type('lib2.oldstyle.fastq_reads')
-        """
-        ws = Workspace(self.ws_url)
-        return get_object_data(get_object_id(object_name)).values()[0][2]
-
     def validate_run_concoct_params(self, task_params):
         """
         validate_run_concoct_params:
