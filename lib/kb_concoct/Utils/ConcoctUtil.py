@@ -279,6 +279,10 @@ class ConcoctUtil:
             print("\n\n\n\nread_type is: {}".format(read_type))
             print("\n\n\n\nread_type is: {}".format(str(read_type)))
             print("\n\n\n\nread_type is: {}".format(type(read_type)))
+            if read_type is '['interleaved']':
+                print("yes, interleaved")
+            else:
+                print("no")
             self.run_read_mapping_unpaired_mode(task_params, assembly_clean, fastq, sam)
 
             sorted_bam = os.path.abspath(sam).split('.sam')[0] + "_sorted.bam"
