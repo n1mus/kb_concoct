@@ -279,7 +279,7 @@ class ConcoctUtil:
             print("\n\n\n\nread_type is: {}".format(read_type))
             print("\n\n\n\nread_type is: {}".format(str(read_type)))
             print("\n\n\n\nread_type is: {}".format(type(read_type)))
-            if read_type == "interleaved":
+            if read_type is "['interleaved']":
                 print("yes, interleaved")
             else:
                 print("no")
