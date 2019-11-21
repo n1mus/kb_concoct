@@ -93,15 +93,14 @@ class ConcoctUtil:
         log('Processing reads object list: {}'.format(reads_list))
 
         result_file_path = []
+        read_type = []
 
         # getting from workspace and writing to scratch. The 'reads' dictionary now has file paths to scratch.
         reads = self.ru.download_reads({'read_libraries': reads_list, 'interleaved': None})['files']
 
-        print("\n\n\n\n: reads variable: {}".format(reads))
         key = list(reads.keys())[0]
         print("\n\n\n\n: reads variable: {}".format(reads[key]['files']['type']))
-        print("\n\n\n\n: reads variable: {}".format(type(list(reads.values()))))
-
+        #read_type = reads[key]['files']['type']
 
         # reads_list is the list of file paths on workspace? (i.e. 12804/1/1).
         # "reads" is the hash of hashes where key is "12804/1/1" or in this case, read_obj and
@@ -109,10 +108,11 @@ class ConcoctUtil:
         for read_obj in reads_list:
             files = reads[read_obj]['files']    # 'files' is dictionary where 'fwd' is key of file path on scratch.
             result_file_path.append(files['fwd'])
+            read_type.append(reads[key]['files']['type'])
             if 'rev' in files and files['rev'] is not None:
                 result_file_path.append(files['rev'])
 
-        return result_file_path
+        return result_file_path, read_type
 
     def get_contig_file(self, assembly_ref):
         """
@@ -256,10 +256,9 @@ class ConcoctUtil:
         # should have been interleaved already). However, I should interleave them in case
         # this function gets called other than the narrative.
         # this should return a list of 1 fastq file path on scratch
-        read_scratch_path = self.stage_reads_list_file(reads_list)
+        (read_scratch_path, read_type) = self.stage_reads_list_file(reads_list)
 
-        print("read_scratch_path {}".format(read_scratch_path))
-        print("read_scratch_path {}".format(read_scratch_path[0]))
+        read_type = task_params['read_type']
 
         # list of reads files, can be 1 or more. assuming reads are either type unpaired or interleaved
         # will not handle unpaired forward and reverse reads input as seperate (non-interleaved) files
@@ -267,11 +266,9 @@ class ConcoctUtil:
 
         for i in range(len(read_scratch_path)):
             fastq = read_scratch_path[i]
+            fastq_type = read_type[i]
             #fastq = read_scratch_path[0] #needs to be a loop
             #reads_type = self.get_obj_id(str(os.path.basename(fastq)[1]))
-            print("OS.PATH.BASENAME0 {}".format([os.path.basename(fastq)]))
-            print("OS.PATH.BASENAME1 {}".format(type([os.path.basename(fastq)])))
-
             #print("OS.PATH.BASENAME" + str(self.get_obj_id(os.path.basename(fastq))))
             # reads_type = self.get_object_type(str(os.path.basename(fastq)))
             # reads_type = self.get_object_type(self.get_obj_id([os.path.basename(fastq)])).values()[0][2]
@@ -281,6 +278,7 @@ class ConcoctUtil:
             sam = os.path.basename(fastq).split('.fastq')[0] + ".sam"
             sam = os.path.join(self.CONCOCT_RESULT_DIRECTORY, sam)
 
+            print("\n\n\n\nread_type is: {}".format(read_type))
             self.run_read_mapping_unpaired_mode(task_params, assembly_clean, fastq, sam)
 
             sorted_bam = os.path.abspath(sam).split('.sam')[0] + "_sorted.bam"
@@ -588,7 +586,10 @@ class ConcoctUtil:
         contig_file = self.get_contig_file(task_params['assembly_ref'])
         task_params['contig_file_path'] = contig_file
 
-        reads_list_file = self.stage_reads_list_file(task_params['reads_list'])
+        (reads_list_file, read_type) = self.stage_reads_list_file(task_params['reads_list'])
+
+        task_params['read_type'] = read_type
+
         task_params['reads_list_file'] = reads_list_file
 
         result_directory = os.path.join(self.scratch, self.CONCOCT_RESULT_DIRECTORY)
