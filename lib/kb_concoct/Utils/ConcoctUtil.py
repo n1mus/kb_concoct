@@ -99,9 +99,7 @@ class ConcoctUtil:
         reads = self.ru.download_reads({'read_libraries': reads_list, 'interleaved': None})['files']
 
         key = list(reads.keys())[0]
-        print("\n\n\n\n: reads variable: {}".format(reads[key]['files']['type']))
         #read_type = reads[key]['files']['type']
-
         # reads_list is the list of file paths on workspace? (i.e. 12804/1/1).
         # "reads" is the hash of hashes where key is "12804/1/1" or in this case, read_obj and
         # "files" is the secondary key. The tertiary keys are "fwd" and "rev", as well as others.
@@ -279,6 +277,8 @@ class ConcoctUtil:
             sam = os.path.join(self.CONCOCT_RESULT_DIRECTORY, sam)
 
             print("\n\n\n\nread_type is: {}".format(read_type))
+            print("\n\n\n\nread_type is: {}".format(str(read_type)))
+            print("\n\n\n\nread_type is: {}".format(type(read_type)))
             self.run_read_mapping_unpaired_mode(task_params, assembly_clean, fastq, sam)
 
             sorted_bam = os.path.abspath(sam).split('.sam')[0] + "_sorted.bam"
