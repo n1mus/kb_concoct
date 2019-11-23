@@ -1,5 +1,5 @@
 {
-    "ver": "1.3.0",
+    "ver": "1.3.1",
     "authors": [
         "seanjungbluth"
     ],
@@ -71,6 +71,12 @@
                         "display": "BWA-MEM",
                         "id": "bwa",
                         "ui_name": "BWA-MEM"
+                    },
+                    {
+                        "value": "hisat2",
+                        "display": "HISAT2",
+                        "id": "hisat2",
+                        "ui_name": "HISAT2"
                     },
                     {
                         "value": "minimap2",

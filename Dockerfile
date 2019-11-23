@@ -22,6 +22,7 @@ WORKDIR /kb/module/lib/kb_concoct/bin/
 
 RUN wget https://github.com/lh3/minimap2/releases/download/v2.17/minimap2-2.17.tar.bz2 && tar -xvf minimap2-* && cd minimap2* && make && cd ../ && rm minimap2-2.17.tar.bz2
 
+RUN wget ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/downloads/hisat2-2.1.0-Linux_x86_64.zip && unzip hisat2-* && rm hisat2-2.1.0-Linux_x86_64.zip
 
 COPY ./ /kb/module
 RUN mkdir -p /kb/module/work
@@ -35,6 +36,7 @@ ENV PATH=/kb/module/lib/kb_concoct/bin:$PATH
 ENV PATH=/kb/module/lib/kb_concoct/bin/bbmap:$PATH
 ENV PATH=/kb/module/lib/kb_concoct/bin/samtools/bin:$PATH
 ENV PATH=/kb/module/lib/kb_concoct/bin/minimap2-2.17/:$PATH
+ENV PATH=/kb/module/lib/kb_concoct/bin/hisat2-2.1.0/:$PATH
 ENV PATH=/kb/deployment/bin/CONCOCT/bin:/kb/deployment/bin/CONCOCT/scripts:$PATH
 
 

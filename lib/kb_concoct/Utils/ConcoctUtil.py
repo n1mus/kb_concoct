@@ -37,9 +37,9 @@ class ConcoctUtil:
         self.au = AssemblyUtil(self.callback_url)
         self.mgu = MetagenomeUtils(self.callback_url)
 
-    def validate_run_concoct_params(self, task_params):
+    def _validate_run_concoct_params(self, task_params):
         """
-        validate_run_concoct_params:
+        _validate_run_concoct_params:
                 validates params passed to run_concoct method
         """
         log('Start validating run_concoct params')
@@ -49,9 +49,9 @@ class ConcoctUtil:
             if p not in task_params:
                 raise ValueError('"{}" parameter is required, but missing'.format(p))
 
-    def mkdir_p(self, path):
+    def _mkdir_p(self, path):
         """
-        mkdir_p: make directory for given path
+        _mkdir_p: make directory for given path
         """
         if not path:
             return
@@ -63,9 +63,9 @@ class ConcoctUtil:
             else:
                 raise
 
-    def run_command(self, command):
+    def _run_command(self, command):
         """
-        run_command: run command and print result
+        _run_command: run command and print result
         """
         os.chdir(self.scratch)
         log('Start executing command:\n{}'.format(command))
@@ -84,6 +84,7 @@ class ConcoctUtil:
             sys.exit(1)
         return (output, stderr)
 
+    # this function has been customized to return read_type variable (interleaved vs single-end library)
     def stage_reads_list_file(self, reads_list):
         """
         stage_reads_list_file: download fastq file associated to reads to scratch area
@@ -112,9 +113,9 @@ class ConcoctUtil:
 
         return result_file_path, read_type
 
-    def get_contig_file(self, assembly_ref):
+    def _get_contig_file(self, assembly_ref):
         """
-        get_contig_file: get contig file from GenomeAssembly object
+        _get_contig_file: get contig file from GenomeAssembly object
         """
         contig_file = self.au.get_assembly_as_fasta({'ref': assembly_ref}).get('path')
 
@@ -123,13 +124,14 @@ class ConcoctUtil:
 
         return contig_file
 
+
     def retrieve_and_clean_assembly(self, task_params):
         if os.path.exists(task_params['contig_file_path']):
             assembly = task_params['contig_file_path']
             print("FOUND ASSEMBLY ON LOCAL SCRATCH")
         else:
             # we are on njsw so lets copy it over to scratch
-            assembly = self.get_contig_file(task_params['assembly_ref'])
+            assembly = self._get_contig_file(task_params['assembly_ref'])
 
         # remove spaces from fasta headers because that breaks bedtools
         assembly_clean = os.path.abspath(assembly).split('.fa')[0] + "_clean.fa"
@@ -137,7 +139,7 @@ class ConcoctUtil:
         command = '/bin/bash reformat.sh in={} out={} addunderscore'.format(assembly, assembly_clean)
 
         log('running reformat command: {}'.format(command))
-        out, err = self.run_command(command)
+        out, err = self._run_command(command)
 
         return assembly_clean
 
@@ -149,7 +151,7 @@ class ConcoctUtil:
         result_directory = os.path.join(self.scratch, self.CONCOCT_RESULT_DIRECTORY)
         genome_bin_fna_file = os.path.join(self.scratch, self.CONCOCT_RESULT_DIRECTORY, genome_bin_fna_file)
         command = '/bin/bash stats.sh in={} format=3 > {}'.format(genome_bin_fna_file, bbstats_output_file)
-        self.run_command(command)
+        self._run_command(command)
         bbstats_output = open(bbstats_output_file, 'r').readlines()[1]
         n_scaffolds = bbstats_output.split('\t')[0]
         n_contigs = bbstats_output.split('\t')[1]
@@ -176,26 +178,11 @@ class ConcoctUtil:
         return {'n_scaffolds': n_scaffolds, 'n_contigs': n_contigs, 'scaf_bp': scaf_bp, 'contig_bp': contig_bp, 'gap_pct': gap_pct, 'scaf_N50': scaf_N50, 'scaf_L50': scaf_L50, 'ctg_N50': ctg_N50, 'scaf_N90': scaf_N90, 'ctg_N90': ctg_N90, 'ctg_L90': ctg_L90, 'scaf_max': scaf_max, 'ctg_max': ctg_max, 'scaf_n_gt50K': scaf_n_gt50K, 'gc_avg': gc_avg, 'gc_std':gc_std}
 
 
-
-    def run_read_mapping_unpaired_mode(self, task_params, assembly_clean, fastq, sam):
-        if task_params['read_mapping_tool'] == 'bbmap':
-            command = 'bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} interleaved=false mappedonly nodisk overwrite'.format(self.BBMAP_MEM, self.MAPPING_THREADS, assembly_clean, fastq, sam) # BBMap is deterministic without the deterministic flag if using single-ended reads
-        elif task_params['read_mapping_tool'] == 'bwa':
-            command = 'bwa index {} && bwa mem -t {} {} {} > {}'.format(assembly_clean, self.MAPPING_THREADS, assembly_clean, fastq, sam)
-        elif task_params['read_mapping_tool'] == 'bowtie2':
-            bt2index = os.path.basename(assembly_clean) + '.bt2'
-            command = 'bowtie2-build -f {} --threads {} {} && bowtie2 -x {} -U {} --threads {} -S {}'.format(assembly_clean, self.MAPPING_THREADS, bt2index, bt2index, fastq, self.MAPPING_THREADS, sam)
-        elif task_params['read_mapping_tool'] == 'minimap2':
-            command = 'minimap2 -ax sr -t {} {} {} > {}'.format(self.MAPPING_THREADS, assembly_clean, fastq, sam)
-        log('running alignment command: {}'.format(command))
-        out, err = self.run_command(command)
-
-
     def deinterlace_raw_reads(self, fastq):
         fastq_forward = fastq.split('.fastq')[0] + "_forward.fastq"
         fastq_reverse = fastq.split('.fastq')[0] + "_reverse.fastq"
         command = 'reformat.sh in={} out1={} out2={}'.format(fastq, fastq_forward, fastq_reverse)
-        self.run_command(command)
+        self._run_command(command)
         return (fastq_forward, fastq_reverse)
 
 
@@ -212,16 +199,40 @@ class ConcoctUtil:
             #need to split interleaved read file to run in paired mode
             (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
             command = 'minimap2 -ax sr -t {} {} {} {} > {}'.format(self.MAPPING_THREADS, assembly_clean, fastq_forward, fastq_reverse, sam)
+        elif task_params['read_mapping_tool'] == 'hisat2':
+            (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
+            ht2index = os.path.basename(assembly_clean) + '.ht2'
+            command = 'hisat2-build {} {} && hisat2 -x {} -1 {} -2 {} -S {} --threads {}'.format(assembly_clean, ht2index, ht2index, fastq_forward, fastq_reverse, sam, self.MAPPING_THREADS)
         log('running alignment command: {}'.format(command))
-        out, err = self.run_command(command)
+        out, err = self._run_command(command)
 
 
-    def convert_sam_to_sorted_and_indexed_bam(self, sam, sorted_bam):
+    def run_read_mapping_unpaired_mode(self, task_params, assembly_clean, fastq, sam):
+        if task_params['read_mapping_tool'] == 'bbmap':
+            command = 'bbmap.sh -Xmx{} fast threads={} ref={} in={} out={} interleaved=false mappedonly nodisk overwrite'.format(self.BBMAP_MEM, self.MAPPING_THREADS, assembly_clean, fastq, sam) # BBMap is deterministic without the deterministic flag if using single-ended reads
+        elif task_params['read_mapping_tool'] == 'bwa':
+            command = 'bwa index {} && bwa mem -t {} {} {} > {}'.format(assembly_clean, self.MAPPING_THREADS, assembly_clean, fastq, sam)
+        elif task_params['read_mapping_tool'] == 'bowtie2':
+            bt2index = os.path.basename(assembly_clean) + '.bt2'
+            command = 'bowtie2-build -f {} --threads {} {} && bowtie2 -x {} -U {} --threads {} -S {}'.format(assembly_clean, self.MAPPING_THREADS, bt2index, bt2index, fastq, self.MAPPING_THREADS, sam)
+        elif task_params['read_mapping_tool'] == 'minimap2':
+            command = 'minimap2 -ax sr -t {} {} {} > {}'.format(self.MAPPING_THREADS, assembly_clean, fastq, sam)
+        elif task_params['read_mapping_tool'] == 'hisat2':
+            ht2index = os.path.basename(assembly_clean) + '.ht2'
+            command = 'hisat2-build {} {} && hisat2 -x {} -U {} -S {} --threads {}'.format(assembly_clean, ht2index, ht2index, fastq, sam, self.MAPPING_THREADS)
+        log('running alignment command: {}'.format(command))
+        out, err = self._run_command(command)
+
+
+
+    def convert_sam_to_sorted_and_indexed_bam(self, sam):
         # create bam files from sam files
+        sorted_bam = os.path.abspath(sam).split('.sam')[0] + "_sorted.bam"
+
         command = 'samtools view -F 0x04 -uS {} | samtools sort - -o {}'.format(sam, sorted_bam)
 
         log('running samtools command to generate sorted bam: {}'.format(command))
-        self.run_command(command)
+        self._run_command(command)
 
         # verify we got bams
         if not os.path.exists(sorted_bam):
@@ -235,64 +246,48 @@ class ConcoctUtil:
         command = 'samtools index {}'.format(sorted_bam)
 
         log('running samtools command to index sorted bam: {}'.format(command))
-        self.run_command(command)
+        self._run_command(command)
 
-    def generate_alignment_bams(self, task_params):
-        """
-            This function runs the bbmap.sh alignments and creates the
-            bam files from sam files using samtools.
-        """
-        # first, clean the assembly file so that there are no spaces in the fasta headers
-        assembly_clean = self.retrieve_and_clean_assembly(task_params)
+        return sorted_bam
 
-        # even though read_name is just one file, make read_name a
-        # list because that is what stage_reads_list_file expects
+
+    def generate_alignment_bams(self, task_params, assembly_clean):
+        """
+            This function runs the selected read mapper and creates the
+            sorted and indexed bam files from sam files using samtools.
+        """
+
         reads_list = task_params['reads_list']
 
-        # we need to copy the fastq file from workspace to local scratch.
-        # 'fastq' should be path to one file (if we had read.fwd.fq and read.rev.fq then they
-        # should have been interleaved already). However, I should interleave them in case
-        # this function gets called other than the narrative.
-        # this should return a list of 1 fastq file path on scratch
         (read_scratch_path, read_type) = self.stage_reads_list_file(reads_list)
 
-        read_type = task_params['read_type']
+        sorted_bam_file_list = []
+        #read_type = task_params['read_type']
 
         # list of reads files, can be 1 or more. assuming reads are either type unpaired or interleaved
         # will not handle unpaired forward and reverse reads input as seperate (non-interleaved) files
-        task_params['read_scratch_file'] = read_scratch_path
 
         for i in range(len(read_scratch_path)):
             fastq = read_scratch_path[i]
             fastq_type = read_type[i]
-            #fastq = read_scratch_path[0] #needs to be a loop
-            #reads_type = self.get_obj_id(str(os.path.basename(fastq)[1]))
-            #print("OS.PATH.BASENAME" + str(self.get_obj_id(os.path.basename(fastq))))
-            # reads_type = self.get_object_type(str(os.path.basename(fastq)))
-            # reads_type = self.get_object_type(self.get_obj_id([os.path.basename(fastq)])).values()[0][2]
-            # print("read_type is " + reads_type)
 
-            #result_directory = task_params['result_directory']
             sam = os.path.basename(fastq).split('.fastq')[0] + ".sam"
             sam = os.path.join(self.CONCOCT_RESULT_DIRECTORY, sam)
 
             if fastq_type == 'interleaved': # make sure working - needs tests
                 log("Running interleaved read mapping mode")
                 self.run_read_mapping_interleaved_pairs_mode(task_params, assembly_clean, fastq, sam)
-            else:
+            else: # running read mapping in single-end mode
                 log("Running unpaired read mapping mode")
                 self.run_read_mapping_unpaired_mode(task_params, assembly_clean, fastq, sam)
 
-            sorted_bam = os.path.abspath(sam).split('.sam')[0] + "_sorted.bam"
+            sorted_bam = self.convert_sam_to_sorted_and_indexed_bam(sam)
 
-            # need to get this to work on list
-            task_params['sorted_bam'] = sorted_bam
+            sorted_bam_file_list.append(sorted_bam)
 
-            self.convert_sam_to_sorted_and_indexed_bam(sam, sorted_bam)
+        return sorted_bam_file_list
 
-        return assembly_clean
-
-    def generate_make_coverage_table_command(self, task_params):
+    def generate_make_coverage_table_command(self, task_params, sorted_bam_file_list):
         # create the depth file for this bam
         #
         min_contig_length = task_params['min_contig_length']
@@ -303,11 +298,10 @@ class ConcoctUtil:
         command += task_params['sorted_bam']
 
         log('running summarize_bam_contig_depths command: {}'.format(command))
-        self.run_command(command)
+        self._run_command(command)
 
         return depth_file_path
 
-    # untested, need to check in UI
     def fix_generate_concoct_command_ui_bug(self, task_params):
         # needed to get checkbox for UI to work with string objects, for some reason strings are converted to numerics when running inside KBase UI.
         parameter_no_total_coverage = task_params['no_total_coverage']
@@ -324,7 +318,6 @@ class ConcoctUtil:
             parameter_no_cov_normalization = ' '
 
         return (parameter_no_total_coverage, parameter_no_cov_normalization)
-
 
 
     def generate_concoct_cut_up_fasta_command(self, task_params):
@@ -431,7 +424,7 @@ class ConcoctUtil:
         output_files = list()
 
         output_directory = os.path.join(self.scratch, str(uuid.uuid4()))
-        self.mkdir_p(output_directory)
+        self._mkdir_p(output_directory)
         result_file = os.path.join(output_directory, 'concoct_result.zip')
 
         with zipfile.ZipFile(result_file, 'w',
@@ -467,7 +460,7 @@ class ConcoctUtil:
         html_report = list()
 
         output_directory = os.path.join(self.scratch, str(uuid.uuid4()))
-        self.mkdir_p(output_directory)
+        self._mkdir_p(output_directory)
         result_file_path = os.path.join(output_directory, 'report.html')
 
         # get summary data from existing assembly object and bins_objects
@@ -583,9 +576,9 @@ class ConcoctUtil:
         log('--->\nrunning ConcoctUtil.run_concoct\n' +
             'task_params:\n{}'.format(json.dumps(task_params, indent=1)))
 
-        self.validate_run_concoct_params(task_params)
+        self._validate_run_concoct_params(task_params)
 
-        contig_file = self.get_contig_file(task_params['assembly_ref'])
+        contig_file = self._get_contig_file(task_params['assembly_ref'])
         task_params['contig_file_path'] = contig_file
 
         (reads_list_file, read_type) = self.stage_reads_list_file(task_params['reads_list'])
@@ -596,40 +589,44 @@ class ConcoctUtil:
 
         result_directory = os.path.join(self.scratch, self.CONCOCT_RESULT_DIRECTORY)
 
-        self.mkdir_p(result_directory)
+        self._mkdir_p(result_directory)
 
         cwd = os.getcwd()
         log('changing working dir to {}'.format(result_directory))
         os.chdir(result_directory)
 
-        #run alignments, and update input contigs to use the clean file
+        # first, clean the assembly file so that there are no spaces in the fasta headers
+        assembly_clean = self.retrieve_and_clean_assembly(task_params)
 
-        # this is the clean assembly
-        task_params['contig_file_path'] = self.generate_alignment_bams(task_params)
+        task_params['contig_file_path'] = assembly_clean
+
+        #run alignments, and update input contigs to use the clean file
+        #this function has an internal loop to generate a sorted bam file for each input read file
+        sorted_bam_file_list = self.generate_alignment_bams(task_params, assembly_clean)
 
         # not used right now
-        depth_file_path = self.generate_make_coverage_table_command(task_params)
-        depth_dict = self.create_dict_from_depth_file(depth_file_path)
+        # depth_file_path = self.generate_make_coverage_table_command(task_params, sorted_bam_file_list)
+        # depth_dict = self.create_dict_from_depth_file(depth_file_path)
 
         # run concoct prep, cut up fasta input
         command = self.generate_concoct_cut_up_fasta_command(task_params)
-        self.run_command(command)
+        self._run_command(command)
 
         # run concoct make coverage table from bam
         command = self.generate_concoct_coverage_table_from_bam(task_params)
-        self.run_command(command)
+        self._run_command(command)
 
         # run concoct prep and concoct
         command = self.generate_concoct_command(task_params)
-        self.run_command(command)
+        self._run_command(command)
 
         # run concoct post cluster merging command
         command = self.generate_concoct_post_clustering_merging_command(task_params)
-        self.run_command(command)
+        self._run_command(command)
 
         # run extract bins command
         command = self.generate_concoct_extract_fasta_bins_command(task_params)
-        self.run_command(command)
+        self._run_command(command)
 
         # run fasta renaming
         self.rename_and_standardize_bin_names(task_params)

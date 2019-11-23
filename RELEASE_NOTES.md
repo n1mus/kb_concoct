@@ -4,6 +4,11 @@
 ToDo
 -----
 * Add kb_parallels support
+* Add different ways to extract coverage (e.g. jgi_summarize_bam_contig_depths vs coverM, vs ?)
+
+1.3.1
+-----
+* Added HISAT2 read aligner as mapping option
 
 1.3.0
 -----
