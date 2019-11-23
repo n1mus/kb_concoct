@@ -246,8 +246,8 @@ class kb_concoctTest(unittest.TestCase):
                                              'no_cov_normalization': '--no_cov_normalization',
                                              'no_total_coverage': '--no_total_coverage',
                                              'binned_contig_name': 'concoct_bin_obj',
-                                             'reads_list': [self.int1_oldstyle_reads_ref] })
-#                                             'reads_list': [self.int1_oldstyle_reads_ref, self.int2_oldstyle_reads_ref] })
+#                                             'reads_list': [self.int1_oldstyle_reads_ref] })
+                                             'reads_list': [self.int1_oldstyle_reads_ref, self.int2_oldstyle_reads_ref] })
 
 
 

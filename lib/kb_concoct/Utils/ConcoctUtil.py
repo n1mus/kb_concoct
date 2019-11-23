@@ -211,7 +211,7 @@ class ConcoctUtil:
         elif task_params['read_mapping_tool'] == 'minimap2':
             #need to split interleaved read file to run in paired mode
             (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
-            command = 'minimap2 -ax sr -t {} {} {} {} > {}'.format(self.MAPPING_THREADS, assembly_clean, fastq_foward, fastq_reverse, sam)
+            command = 'minimap2 -ax sr -t {} {} {} {} > {}'.format(self.MAPPING_THREADS, assembly_clean, fastq_forward, fastq_reverse, sam)
         log('running alignment command: {}'.format(command))
         out, err = self.run_command(command)
 
@@ -276,14 +276,12 @@ class ConcoctUtil:
             sam = os.path.basename(fastq).split('.fastq')[0] + ".sam"
             sam = os.path.join(self.CONCOCT_RESULT_DIRECTORY, sam)
 
-            print("\n\n\n\nread_type is: {}".format(read_type))
-            print("\n\n\n\nread_type is: {}".format(str(read_type)))
-            print("\n\n\n\nread_type is: {}".format(type(read_type)))
-            if read_type is "['interleaved']":
-                print("yes, interleaved")
+            if fastq_type == 'interleaved': # make sure working - needs tests
+                log("Running interleaved read mapping mode")
+                self.run_read_mapping_interleaved_pairs_mode(task_params, assembly_clean, fastq, sam)
             else:
-                print("no")
-            self.run_read_mapping_unpaired_mode(task_params, assembly_clean, fastq, sam)
+                log("Running unpaired read mapping mode")
+                self.run_read_mapping_unpaired_mode(task_params, assembly_clean, fastq, sam)
 
             sorted_bam = os.path.abspath(sam).split('.sam')[0] + "_sorted.bam"
 
