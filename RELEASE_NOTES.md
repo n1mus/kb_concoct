@@ -9,6 +9,8 @@ ToDo
 1.3.1
 -----
 * Added HISAT2 read aligner as mapping option
+* Large code delinting effort
+* Added tests for different read mapping tools
 
 1.3.0
 -----

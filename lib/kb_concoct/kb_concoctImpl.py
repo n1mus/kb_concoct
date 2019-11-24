@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
-import logging
 import os
 import json
 
-from installed_clients.KBaseReportClient import KBaseReport
 from kb_concoct.Utils.ConcoctUtil import ConcoctUtil
 
 #END_HEADER
