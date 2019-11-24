@@ -113,6 +113,7 @@ class ConcoctUtil:
             if 'rev' in files and files['rev'] is not None:
                 result_file_path.append(files['rev'])
 
+        print("\nall read_type is: {}".format(reads[key]['files']))
         print("\nread_type is: {}".format(read_type))
         return result_file_path, read_type
 
