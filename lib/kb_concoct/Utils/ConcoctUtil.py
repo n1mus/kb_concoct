@@ -101,8 +101,6 @@ class ConcoctUtil:
         # getting from workspace and writing to scratch. The 'reads' dictionary now has file paths to scratch.
         reads = self.ru.download_reads({'read_libraries': reads_list, 'interleaved': None})['files']
 
-        key = list(reads.keys())[0]
-        # read_type = reads[key]['files']['type']
         # reads_list is the list of file paths on workspace? (i.e. 12804/1/1).
         # "reads" is the hash of hashes where key is "12804/1/1" or in this case, read_obj and
         # "files" is the secondary key. The tertiary keys are "fwd" and "rev", as well as others.
@@ -110,10 +108,6 @@ class ConcoctUtil:
             files = reads[read_obj]['files']    # 'files' is dictionary where 'fwd' is key of file path on scratch.
             result_file_path.append(files['fwd'])
             read_type.append(files['type'])
-            print("\nall read_type is: {}".format(files))
-            print("\nread_type is: {}".format(read_type))
-
-            #read_type.append(reads[key]['files']['type'])
             if 'rev' in files and files['rev'] is not None:
                 result_file_path.append(files['rev'])
 
@@ -152,7 +146,7 @@ class ConcoctUtil:
         """
         generate_command: bbtools stats.sh command
         """
-        log("\n\nRunning generate_stats_for_genome_bins on {}".format(genome_bin_fna_file))
+        log("running generate_stats_for_genome_bins on {}".format(genome_bin_fna_file))
         genome_bin_fna_file = os.path.join(self.scratch, self.CONCOCT_RESULT_DIRECTORY, genome_bin_fna_file)
         command = '/bin/bash stats.sh in={} format=3 > {}'.format(genome_bin_fna_file, bbstats_output_file)
         self._run_command(command)
@@ -208,6 +202,8 @@ class ConcoctUtil:
         return (fastq_forward, fastq_reverse)
 
     def run_read_mapping_interleaved_pairs_mode(self, task_params, assembly_clean, fastq, sam):
+        read_mapping_tool = task_params['read_mapping_tool']
+        log("running {} mapping in interleaved mode.".format(read_mapping_tool))
         if task_params['read_mapping_tool'] == 'bbmap':
             command = 'bbmap.sh -Xmx{} '.format(self.BBMAP_MEM)
             command += 'threads={} '.format(self.MAPPING_THREADS)
@@ -266,6 +262,8 @@ class ConcoctUtil:
         out, err = self._run_command(command)
 
     def run_read_mapping_unpaired_mode(self, task_params, assembly_clean, fastq, sam):
+        read_mapping_tool = task_params['read_mapping_tool']
+        log("running {} mapping in single-end (unpaired) mode.".format(read_mapping_tool))
         if task_params['read_mapping_tool'] == 'bbmap':
             command = 'bbmap.sh -Xmx{} '.format(self.BBMAP_MEM)
             command += 'threads={} '.format(self.MAPPING_THREADS)
