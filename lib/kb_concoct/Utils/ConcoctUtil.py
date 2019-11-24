@@ -209,7 +209,7 @@ class ConcoctUtil:
             command += 'threads={} '.format(self.MAPPING_THREADS)
             command += 'ref={} '.format(assembly_clean)
             command += 'in={} '.format(fastq)
-            command += 'out={}'.format(sam)
+            command += 'out={} '.format(sam)
             command += 'fast interleaved=true mappedonly nodisk overwrite'
         elif task_params['read_mapping_tool'] == 'bwa':
             (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
@@ -219,13 +219,26 @@ class ConcoctUtil:
             command += '{} '.format(fastq_forward)
             command += '{} > '.format(fastq_reverse)
             command += '{}'.format(sam)
-        elif task_params['read_mapping_tool'] == 'bowtie2':
+        elif task_params['read_mapping_tool'] == 'bowtie2_default':
+            (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
             bt2index = os.path.basename(assembly_clean) + '.bt2'
             command = 'bowtie2-build -f {} '.format(assembly_clean)
             command += '--threads {} '.format(self.MAPPING_THREADS)
             command += '{} && '.format(bt2index)
             command += 'bowtie2 -x {} '.format(bt2index)
-            command += '--interleaved {} '.format(fastq)
+            command += '-1 {} '.format(fastq_forward)
+            command += '-2 {} '.format(fastq_reverse)
+            command += '--threads {} '.format(self.MAPPING_THREADS)
+            command += '-S {}'.format(sam)
+        elif task_params['read_mapping_tool'] == 'bowtie2_very_sensitive':
+            (fastq_forward, fastq_reverse) = self.deinterlace_raw_reads(fastq)
+            bt2index = os.path.basename(assembly_clean) + '.bt2'
+            command = 'bowtie2-build -f {} '.format(assembly_clean)
+            command += '--threads {} '.format(self.MAPPING_THREADS)
+            command += '{} && '.format(bt2index)
+            command += 'bowtie2 --very-sensitive -x {} '.format(bt2index)
+            command += '-1 {} '.format(fastq_forward)
+            command += '-2 {} '.format(fastq_reverse)
             command += '--threads {} '.format(self.MAPPING_THREADS)
             command += '-S {}'.format(sam)
         elif task_params['read_mapping_tool'] == 'minimap2':
@@ -263,12 +276,21 @@ class ConcoctUtil:
             command += '{} '.format(assembly_clean)
             command += '{} > '.format(fastq)
             command += '{}'.format(sam)
-        elif task_params['read_mapping_tool'] == 'bowtie2':
+        elif task_params['read_mapping_tool'] == 'bowtie2_default':
             bt2index = os.path.basename(assembly_clean) + '.bt2'
             command = 'bowtie2-build -f {} '.format(assembly_clean)
             command += '--threads {} '.format(self.MAPPING_THREADS)
             command += '{} && '.format(bt2index)
             command += 'bowtie2 -x {} '.format(bt2index)
+            command += '-U {} '.format(fastq)
+            command += '--threads {} '.format(self.MAPPING_THREADS)
+            command += '-S {}'.format(sam)
+        elif task_params['read_mapping_tool'] == 'bowtie2_very_sensitive':
+            bt2index = os.path.basename(assembly_clean) + '.bt2'
+            command = 'bowtie2-build -f {} '.format(assembly_clean)
+            command += '--threads {} '.format(self.MAPPING_THREADS)
+            command += '{} && '.format(bt2index)
+            command += 'bowtie2 --very-sensitive -x {} '.format(bt2index)
             command += '-U {} '.format(fastq)
             command += '--threads {} '.format(self.MAPPING_THREADS)
             command += '-S {}'.format(sam)
@@ -425,7 +447,8 @@ class ConcoctUtil:
         max_clusters_for_vgmm = task_params['max_clusters_for_vgmm']
         max_iterations_for_vgmm = task_params['max_iterations_for_vgmm']
         total_percentage_pca = task_params['total_percentage_pca']
-        parameter_no_total_coverage, parameter_no_cov_normalization = self.fix_generate_concoct_command_ui_bug(task_params)
+        parameter_no_total_coverage, parameter_no_cov_normalization = \
+            self.fix_generate_concoct_command_ui_bug(task_params)
 
         log("\n\nRunning generate_concoct_command")
         command = 'python {}/bin/concoct '.format(self.CONCOCT_BASE_PATH)
@@ -435,7 +458,7 @@ class ConcoctUtil:
         command += '--coverage_file {}/coverage_table.tsv '.format(self.CONCOCT_RESULT_DIRECTORY)
         command += '-t {} '.format(self.MAPPING_THREADS)
         command += '-k {} '.format(kmer_size)
-        command += '-c {}'.format(max_clusters_for_vgmm)
+        command += '-c {} '.format(max_clusters_for_vgmm)
         command += '-i {} '.format(max_iterations_for_vgmm)
         command += '--total_percentage_pca {} '.format(total_percentage_pca)
         command += '{} '.format(parameter_no_cov_normalization)
@@ -452,8 +475,7 @@ class ConcoctUtil:
         log("\n\nRunning generate_concoct_post_clustering_merging_command")
 
         command = 'python {}/scripts/merge_cutup_clustering.py '.format(self.CONCOCT_BASE_PATH)
-        command += '{}/clustering_gt'.format(self.CONCOCT_RESULT_DIRECTORY)
-        command += '{}.csv > '.format(min_contig_length)
+        command += '{}/clustering_gt{}.csv > '.format(self.CONCOCT_RESULT_DIRECTORY, min_contig_length)
         command += '{}/clustering_merged.csv'.format(self.CONCOCT_RESULT_DIRECTORY)
         log('Generated generate_concoct_post_clustering_merging command: {}'.format(command))
 
@@ -482,11 +504,14 @@ class ConcoctUtil:
         generate_command: generate renamed bins
         """
         log("\n\nRunning rename_and_standardize_bin_names")
-        path_to_concoct_result_bins = os.path.abspath(self.CONCOCT_RESULT_DIRECTORY) + '/' + self.CONCOCT_BIN_RESULT_DIR + '/'
+        path_to_concoct_result_bins = os.path.abspath(self.CONCOCT_RESULT_DIRECTORY) + \
+            '/' + self.CONCOCT_BIN_RESULT_DIR + '/'
         for dirname, subdirs, files in os.walk(path_to_concoct_result_bins):
             for file in files:
                 if file.endswith('.fa'):
-                    os.rename(os.path.abspath(path_to_concoct_result_bins) + '/' + file, os.path.abspath(path_to_concoct_result_bins) + '/bin.' + file.split('.fa')[0].zfill(3) + '.fasta')
+                    os.rename(os.path.abspath(path_to_concoct_result_bins) + '/' +
+                              file, os.path.abspath(path_to_concoct_result_bins) + '/bin.' +
+                              file.split('.fa')[0].zfill(3) + '.fasta') # need to change to 4 digits
 
     def make_binned_contig_summary_file_for_binning_apps(self, task_params):
         """
@@ -502,9 +527,14 @@ class ConcoctUtil:
                 for file in files:
                     if file.endswith('.fasta'):
                         genome_bin_fna_file = os.path.join(self.CONCOCT_BIN_RESULT_DIR, file)
-                        bbstats_output_file = os.path.join(self.scratch, self.CONCOCT_RESULT_DIRECTORY, genome_bin_fna_file).split('.fasta')[0] + ".bbstatsout"
-                        bbstats_output = self.generate_stats_for_genome_bins(task_params, genome_bin_fna_file, bbstats_output_file)
-                        f.write('{}\t0\t{}\t{}\n'.format(genome_bin_fna_file.split("/")[-1], bbstats_output['contig_bp'], bbstats_output['gc_avg']))
+                        bbstats_output_file = os.path.join(self.scratch, self.CONCOCT_RESULT_DIRECTORY,
+                                                           genome_bin_fna_file).split('.fasta')[0] + ".bbstatsout"
+                        bbstats_output = self.generate_stats_for_genome_bins(task_params,
+                                                                             genome_bin_fna_file,
+                                                                             bbstats_output_file)
+                        f.write('{}\t0\t{}\t{}\n'.format(genome_bin_fna_file.split("/")[-1],
+                                                         bbstats_output['contig_bp'],
+                                                         bbstats_output['gc_avg']))
         f.close()
         log('Finished make_binned_contig_summary_file_for_binning_apps function')
 
@@ -525,7 +555,10 @@ class ConcoctUtil:
 
             for dirname, subdirs, files in os.walk(result_directory):
                 for file in files:
-                    if (file.endswith('.sam') or file.endswith('.bam') or file.endswith('.bai') or file.endswith('.summary')):
+                    if (file.endswith('.sam') or
+                        file.endswith('.bam') or
+                        file.endswith('.bai') or
+                       file.endswith('.summary')):
                             continue
                     if (dirname.endswith(self.CONCOCT_BIN_RESULT_DIR)):
                             continue
@@ -558,7 +591,8 @@ class ConcoctUtil:
         # get summary data from existing assembly object and bins_objects
         Summary_Table_Content = ''
         Overview_Content = ''
-        (binned_contig_count, input_contig_count, total_bins_count) = self.generate_overview_info(assembly_ref, binned_contig_obj_ref, result_directory)
+        (binned_contig_count, input_contig_count, total_bins_count) = \
+            self.generate_overview_info(assembly_ref, binned_contig_obj_ref, result_directory)
 
         Overview_Content += '<p>Binned contigs: {}</p>'.format(binned_contig_count)
         Overview_Content += '<p>Input contigs: {}</p>'.format(input_contig_count)
@@ -611,7 +645,9 @@ class ConcoctUtil:
 
         output_files = self.generate_output_file_list(task_params['result_directory'])
 
-        output_html_files = self.generate_html_report(task_params['result_directory'], task_params['assembly_ref'], binned_contig_obj_ref)
+        output_html_files = self.generate_html_report(task_params['result_directory'],
+                                                      task_params['assembly_ref'],
+                                                      binned_contig_obj_ref)
 
         report_params = {
             'message': '',
@@ -675,6 +711,10 @@ class ConcoctUtil:
         contig_file = self._get_contig_file(task_params['assembly_ref'])
         task_params['contig_file_path'] = contig_file
 
+        # clean the assembly file so that there are no spaces in the fasta headers
+        assembly_clean = self.retrieve_and_clean_assembly(task_params)
+        task_params['contig_file_path'] = assembly_clean
+
         # get reads
         (reads_list_file, read_type) = self.stage_reads_list_file(task_params['reads_list'])
         task_params['read_type'] = read_type
@@ -687,11 +727,6 @@ class ConcoctUtil:
         cwd = os.getcwd()
         log('changing working dir to {}'.format(result_directory))
         os.chdir(result_directory)
-
-        # first, clean the assembly file so that there are no spaces in the fasta headers
-        assembly_clean = self.retrieve_and_clean_assembly(task_params)
-
-        task_params['contig_file_path'] = assembly_clean
 
         # run alignments, and update input contigs to use the clean file
         # this function has an internal loop to generate a sorted bam file for each input read file
@@ -735,7 +770,9 @@ class ConcoctUtil:
             'binned_contig_name': task_params['binned_contig_name'],
             'workspace_name': task_params['workspace_name']
         }
-        binned_contig_obj_ref = self.mgu.file_to_binned_contigs(generate_binned_contig_param).get('binned_contig_obj_ref')
+
+        binned_contig_obj_ref = \
+            self.mgu.file_to_binned_contigs(generate_binned_contig_param).get('binned_contig_obj_ref')
 
         # generate report
         reportVal = self.generate_report(binned_contig_obj_ref, task_params)

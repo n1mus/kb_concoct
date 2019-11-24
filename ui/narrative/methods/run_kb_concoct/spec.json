@@ -61,10 +61,16 @@
                         "ui_name": "BBMap"
                     },
                     {
-                        "value": "bowtie2",
-                        "display": "Bowtie2",
-                        "id": "bowtie2",
-                        "ui_name": "Bowtie2"
+                        "value": "bowtie2_default",
+                        "display": "Bowtie2 (default)",
+                        "id": "bowtie2_default",
+                        "ui_name": "Bowtie2 (default)"
+                    },
+                    {
+                        "value": "bowtie2_very_sensitive",
+                        "display": "Bowtie2 (very sensitive)",
+                        "id": "bowtie2_very_sensitive",
+                        "ui_name": "Bowtie2 (very sensitive)"
                     },
                     {
                         "value": "bwa",

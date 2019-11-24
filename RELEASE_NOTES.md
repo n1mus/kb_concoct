@@ -3,14 +3,16 @@
 
 ToDo
 -----
-* Add kb_parallels support
+* Add kb_parallels support - see kbase-metabat example
 * Add different ways to extract coverage (e.g. jgi_summarize_bam_contig_depths vs coverM, vs ?)
+* Expose seed parameters (e.g. HISAT2)
 
 1.3.1
 -----
 * Added HISAT2 read aligner as mapping option
-* Large code delinting effort
+* Large code de-linting effort
 * Added tests for different read mapping tools
+* Added bowtie2 very sensitive mode
 
 1.3.0
 -----
