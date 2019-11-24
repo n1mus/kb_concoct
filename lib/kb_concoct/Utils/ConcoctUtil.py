@@ -109,12 +109,14 @@ class ConcoctUtil:
         for read_obj in reads_list:
             files = reads[read_obj]['files']    # 'files' is dictionary where 'fwd' is key of file path on scratch.
             result_file_path.append(files['fwd'])
-            read_type.append(reads[key]['files']['type'])
+            read_type.append(files['type'])
+            print("\nall read_type is: {}".format(files))
+            print("\nread_type is: {}".format(read_type))
+
+            #read_type.append(reads[key]['files']['type'])
             if 'rev' in files and files['rev'] is not None:
                 result_file_path.append(files['rev'])
 
-        print("\nall read_type is: {}".format(reads[key]['files']))
-        print("\nread_type is: {}".format(read_type))
         return result_file_path, read_type
 
     def _get_contig_file(self, assembly_ref):
