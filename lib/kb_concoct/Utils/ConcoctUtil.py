@@ -113,7 +113,7 @@ class ConcoctUtil:
             if 'rev' in files and files['rev'] is not None:
                 result_file_path.append(files['rev'])
 
-        log("read_type is: " read_type)
+        print("\nread_type is: {}".format(read_type))
         return result_file_path, read_type
 
     def _get_contig_file(self, assembly_ref):
