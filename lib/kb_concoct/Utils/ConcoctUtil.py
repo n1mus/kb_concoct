@@ -12,6 +12,7 @@ from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.MetagenomeUtilsClient import MetagenomeUtils
 from installed_clients.ReadsUtilsClient import ReadsUtils
+from installed_clients.KBParallelClient import KBParallel
 
 # for future expansion
 # from kb_concoct.BinningUtilities import BinningUtil as bu
@@ -28,6 +29,8 @@ class ConcoctUtil:
     CONCOCT_BIN_RESULT_DIR = 'final_bins'
     MAPPING_THREADS = 16
     BBMAP_MEM = '30g'
+    MAX_NODES = 6 # for KBParallels
+
 
     def __init__(self, config):
         self.callback_url = config['SDK_CALLBACK_URL']
@@ -38,6 +41,59 @@ class ConcoctUtil:
         self.ru = ReadsUtils(self.callback_url)
         self.au = AssemblyUtil(self.callback_url)
         self.mgu = MetagenomeUtils(self.callback_url)
+        self.parallel_runner = KBParallel(self.callback_url)
+
+
+
+    def set_up_parallel_tasks(self, task_params):
+
+        # lets create the tasks that will be run in parallel
+        tasks = []
+        for fastq in reads_list:
+            print("ADDING FASTQ FILE".format(fastq))
+            task_params = copy.deepcopy(task_params)
+            task_params['fastq'] = fastq
+            function_for_parallelizing = 'run_read_mapping_interleaved_pairs_mode'
+            tasks.append( {'module_name': 'kb_concoct',
+                            'function_name': function_for_parallelizing,
+                            'version': 'dev',
+                            'parameters': task_params
+                          } )
+
+        # calculate how many nodes we need (max=5)
+        num_nsjw_nodes_required=0
+        num_fastq = len(reads_list)
+        if num_fastq < self.MAX_NODES:
+            num_nsjw_nodes_required = num_fastq
+        else:
+            num_nsjw_nodes_required = self.MAX_NODES
+            num_nsjw_nodes_required -= 1
+
+        # kbparallel requires these params
+        batch_run_params = {'tasks': tasks,
+                            'runner': 'parallel',
+                            'concurrent_local_tasks': 1,
+                            'concurrent_njsw_tasks': 0, #num_nsjw_nodes_required,
+                            'max_retries': 2}
+
+        # We'll run the alignments in parallel here
+        log('--->\nlaunching parallel jobs\n')
+        kbparallel_results = self.parallel_runner.run_batch(batch_run_params)
+
+        # print('KBPARALLLEL RESULTS')
+        # pprint(kbparallel_results)
+        # sys.exit()
+
+        # ======================== #
+        # back on the master node.
+        # write depth.txt files to json files before trying to
+        # merge them into one file for debugging reasons
+        # -------------------------------------------------
+        # check for errors returned by njsw remote jobs
+        for fd in kbparallel_results['results']:
+            if fd['result_package']['error'] is not None:
+                log('kb_parallel failed to complete without throwing an error on at least one of the kbparallel-njsw nodes.')
+                sys.exit(1)
 
     def _validate_run_concoct_params(self, task_params):
         """
@@ -729,6 +785,12 @@ class ConcoctUtil:
         cwd = os.getcwd()
         log('changing working dir to {}'.format(result_directory))
         os.chdir(result_directory)
+
+
+
+        # set up tasks for kbparallel to run alignments
+        # this also submits run_alignments function in parallel
+        #self.set_up_parallel_tasks(params)
 
         # run alignments, and update input contigs to use the clean file
         # this function has an internal loop to generate a sorted bam file for each input read file
