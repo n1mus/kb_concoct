@@ -6,6 +6,7 @@ import sys
 import time
 import uuid
 import zipfile
+import copy
 
 from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.DataFileUtilClient import DataFileUtil
@@ -43,21 +44,22 @@ class ConcoctUtil:
         self.mgu = MetagenomeUtils(self.callback_url)
         self.parallel_runner = KBParallel(self.callback_url)
 
-
-
     def set_up_parallel_tasks(self, task_params):
 
         # lets create the tasks that will be run in parallel
         tasks = []
+        reads_list = task_params['reads_list']
+
         for fastq in reads_list:
             print("ADDING FASTQ FILE".format(fastq))
             task_params = copy.deepcopy(task_params)
             task_params['fastq'] = fastq
-            function_for_parallelizing = 'run_read_mapping_interleaved_pairs_mode'
-            tasks.append( {'module_name': 'kb_concoct',
+            module_input = 'kb_concoct'
+            function_for_parallelizing = 'generate_alignment_bams'
+            tasks.append( {'module_name': module_input,
                             'function_name': function_for_parallelizing,
                             'version': 'dev',
-                            'parameters': task_params
+                            'parameters': { task_params, assembly_clean }
                           } )
 
         # calculate how many nodes we need (max=5)
@@ -409,25 +411,25 @@ class ConcoctUtil:
         # list of reads files, can be 1 or more. assuming reads are either type unpaired or interleaved
         # will not handle unpaired forward and reverse reads input as seperate (non-interleaved) files
 
-        for i in range(len(read_scratch_path)):
-            fastq = read_scratch_path[i]
-            fastq_type = read_type[i]
+        # for i in range(len(read_scratch_path)):
+        #     fastq = read_scratch_path[i]
+        #     fastq_type = read_type[i]
 
-            sam = os.path.basename(fastq).split('.fastq')[0] + ".sam"
-            sam = os.path.join(self.CONCOCT_RESULT_DIRECTORY, sam)
+        sam = os.path.basename(fastq).split('.fastq')[0] + ".sam"
+        sam = os.path.join(self.CONCOCT_RESULT_DIRECTORY, sam)
 
-            if fastq_type == 'interleaved':  # make sure working - needs tests
-                log("Running interleaved read mapping mode")
-                self.run_read_mapping_interleaved_pairs_mode(task_params, assembly_clean, fastq, sam)
-            else:  # running read mapping in single-end mode
-                log("Running unpaired read mapping mode")
-                self.run_read_mapping_unpaired_mode(task_params, assembly_clean, fastq, sam)
+        if fastq_type == 'interleaved':  # make sure working - needs tests
+            log("Running interleaved read mapping mode")
+            self.run_read_mapping_interleaved_pairs_mode(task_params, assembly_clean, fastq, sam)
+        else:  # running read mapping in single-end mode
+            log("Running unpaired read mapping mode")
+            self.run_read_mapping_unpaired_mode(task_params, assembly_clean, fastq, sam)
 
-            sorted_bam = self.convert_sam_to_sorted_and_indexed_bam(sam)
+        sorted_bam = self.convert_sam_to_sorted_and_indexed_bam(sam)
 
-            sorted_bam_file_list.append(sorted_bam)
+            # sorted_bam_file_list.append(sorted_bam)
 
-        return sorted_bam_file_list
+        # return sorted_bam_file_list
 
     def generate_make_coverage_table_command(self, task_params, sorted_bam_file_list):
         # create the depth file for this bam
@@ -794,7 +796,10 @@ class ConcoctUtil:
 
         # run alignments, and update input contigs to use the clean file
         # this function has an internal loop to generate a sorted bam file for each input read file
-        sorted_bam_file_list = self.generate_alignment_bams(task_params, assembly_clean)
+
+        self.set_up_parallel_tasks(task_params)
+
+        #sorted_bam_file_list = self.generate_alignment_bams(task_params, assembly_clean)
 
         # not used right now
         # depth_file_path = self.generate_make_coverage_table_command(task_params, sorted_bam_file_list)
