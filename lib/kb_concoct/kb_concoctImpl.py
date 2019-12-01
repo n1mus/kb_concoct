@@ -40,7 +40,6 @@ class kb_concoct:
         #END_CONSTRUCTOR
         pass
 
-
     def run_kb_concoct(self, ctx, params):
         """
         :param params: instance of type "ConcoctInputParams" (required

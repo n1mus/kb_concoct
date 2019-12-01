@@ -13,7 +13,7 @@ from installed_clients.DataFileUtilClient import DataFileUtil
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.MetagenomeUtilsClient import MetagenomeUtils
 from installed_clients.ReadsUtilsClient import ReadsUtils
-from installed_clients.KBParallelClient import KBParallel
+# from installed_clients.KBParallelClient import KBParallel
 
 # for future expansion
 # from kb_concoct.BinningUtilities import BinningUtil as bu
@@ -26,12 +26,11 @@ def log(message, prefix_newline=False):
 
 class ConcoctUtil:
     CONCOCT_BASE_PATH = '/kb/deployment/bin/CONCOCT'
-    CONCOCT_RESULT_DIRECTORY = 'concoct_output_dir'
-    CONCOCT_BIN_RESULT_DIR = 'final_bins'
+    BINNER_RESULT_DIRECTORY = 'concoct_output_dir'
+    BINNER_BIN_RESULT_DIR = 'final_bins'
     MAPPING_THREADS = 16
     BBMAP_MEM = '30g'
-    MAX_NODES = 6 # for KBParallels
-
+    MAX_NODES = 6  # for KBParallels
 
     def __init__(self, config):
         self.callback_url = config['SDK_CALLBACK_URL']
@@ -42,60 +41,60 @@ class ConcoctUtil:
         self.ru = ReadsUtils(self.callback_url)
         self.au = AssemblyUtil(self.callback_url)
         self.mgu = MetagenomeUtils(self.callback_url)
-        self.parallel_runner = KBParallel(self.callback_url)
+        # self.parallel_runner = KBParallel(self.callback_url)
 
-    def set_up_parallel_tasks(self, task_params):
+    # def set_up_parallel_tasks(self, task_params):
 
-        # lets create the tasks that will be run in parallel
-        tasks = []
-        reads_list = task_params['reads_list']
+    #     # lets create the tasks that will be run in parallel
+    #     tasks = []
+    #     reads_list = task_params['reads_list']
 
-        for fastq in reads_list:
-            print("ADDING FASTQ FILE".format(fastq))
-            task_params = copy.deepcopy(task_params)
-            task_params['fastq'] = fastq
-            module_input = 'kb_concoct'
-            function_for_parallelizing = 'generate_alignment_bams'
-            tasks.append( {'module_name': module_input,
-                            'function_name': function_for_parallelizing,
-                            'version': 'dev',
-                            'parameters': { task_params, assembly_clean }
-                          } )
+    #     for fastq in reads_list:
+    #         print("ADDING FASTQ FILE".format(fastq))
+    #         task_params = copy.deepcopy(task_params)
+    #         task_params['fastq'] = fastq
+    #         module_input = 'kb_concoct'
+    #         function_for_parallelizing = 'generate_alignment_bams'
+    #         tasks.append( {'module_name': module_input,
+    #                         'function_name': function_for_parallelizing,
+    #                         'version': 'dev',
+    #                         'parameters': { task_params, assembly_clean }
+    #                       } )
 
-        # calculate how many nodes we need (max=5)
-        num_nsjw_nodes_required=0
-        num_fastq = len(reads_list)
-        if num_fastq < self.MAX_NODES:
-            num_nsjw_nodes_required = num_fastq
-        else:
-            num_nsjw_nodes_required = self.MAX_NODES
-            num_nsjw_nodes_required -= 1
+    #     # calculate how many nodes we need (max=5)
+    #     num_nsjw_nodes_required=0
+    #     num_fastq = len(reads_list)
+    #     if num_fastq < self.MAX_NODES:
+    #         num_nsjw_nodes_required = num_fastq
+    #     else:
+    #         num_nsjw_nodes_required = self.MAX_NODES
+    #         num_nsjw_nodes_required -= 1
 
-        # kbparallel requires these params
-        batch_run_params = {'tasks': tasks,
-                            'runner': 'parallel',
-                            'concurrent_local_tasks': 1,
-                            'concurrent_njsw_tasks': 0, #num_nsjw_nodes_required,
-                            'max_retries': 2}
+    #     # kbparallel requires these params
+    #     batch_run_params = {'tasks': tasks,
+    #                         'runner': 'parallel',
+    #                         'concurrent_local_tasks': 1,
+    #                         'concurrent_njsw_tasks': 0, #num_nsjw_nodes_required,
+    #                         'max_retries': 2}
 
-        # We'll run the alignments in parallel here
-        log('--->\nlaunching parallel jobs\n')
-        kbparallel_results = self.parallel_runner.run_batch(batch_run_params)
+    #     # We'll run the alignments in parallel here
+    #     log('--->\nlaunching parallel jobs\n')
+    #     kbparallel_results = self.parallel_runner.run_batch(batch_run_params)
 
-        # print('KBPARALLLEL RESULTS')
-        # pprint(kbparallel_results)
-        # sys.exit()
+    #     # print('KBPARALLLEL RESULTS')
+    #     # pprint(kbparallel_results)
+    #     # sys.exit()
 
-        # ======================== #
-        # back on the master node.
-        # write depth.txt files to json files before trying to
-        # merge them into one file for debugging reasons
-        # -------------------------------------------------
-        # check for errors returned by njsw remote jobs
-        for fd in kbparallel_results['results']:
-            if fd['result_package']['error'] is not None:
-                log('kb_parallel failed to complete without throwing an error on at least one of the kbparallel-njsw nodes.')
-                sys.exit(1)
+    #     # ======================== #
+    #     # back on the master node.
+    #     # write depth.txt files to json files before trying to
+    #     # merge them into one file for debugging reasons
+    #     # -------------------------------------------------
+    #     # check for errors returned by njsw remote jobs
+    #     for fd in kbparallel_results['results']:
+    #         if fd['result_package']['error'] is not None:
+    #             log('kb_parallel failed to complete without throwing an error on at least one of the kbparallel-njsw nodes.')
+    #             sys.exit(1)
 
     def _validate_run_concoct_params(self, task_params):
         """
@@ -205,7 +204,7 @@ class ConcoctUtil:
         generate_command: bbtools stats.sh command
         """
         log("running generate_stats_for_genome_bins on {}".format(genome_bin_fna_file))
-        genome_bin_fna_file = os.path.join(self.scratch, self.CONCOCT_RESULT_DIRECTORY, genome_bin_fna_file)
+        genome_bin_fna_file = os.path.join(self.scratch, self.BINNER_RESULT_DIRECTORY, genome_bin_fna_file)
         command = '/bin/bash stats.sh in={} format=3 > {}'.format(genome_bin_fna_file, bbstats_output_file)
         self._run_command(command)
         bbstats_output = open(bbstats_output_file, 'r').readlines()[1]
@@ -411,25 +410,25 @@ class ConcoctUtil:
         # list of reads files, can be 1 or more. assuming reads are either type unpaired or interleaved
         # will not handle unpaired forward and reverse reads input as seperate (non-interleaved) files
 
-        # for i in range(len(read_scratch_path)):
-        #     fastq = read_scratch_path[i]
-        #     fastq_type = read_type[i]
+        for i in range(len(read_scratch_path)):
+            fastq = read_scratch_path[i]
+            fastq_type = read_type[i]
 
-        sam = os.path.basename(fastq).split('.fastq')[0] + ".sam"
-        sam = os.path.join(self.CONCOCT_RESULT_DIRECTORY, sam)
+            sam = os.path.basename(fastq).split('.fastq')[0] + ".sam"
+            sam = os.path.join(self.BINNER_RESULT_DIRECTORY, sam)
 
-        if fastq_type == 'interleaved':  # make sure working - needs tests
-            log("Running interleaved read mapping mode")
-            self.run_read_mapping_interleaved_pairs_mode(task_params, assembly_clean, fastq, sam)
-        else:  # running read mapping in single-end mode
-            log("Running unpaired read mapping mode")
-            self.run_read_mapping_unpaired_mode(task_params, assembly_clean, fastq, sam)
+            if fastq_type == 'interleaved':  # make sure working - needs tests
+                log("Running interleaved read mapping mode")
+                self.run_read_mapping_interleaved_pairs_mode(task_params, assembly_clean, fastq, sam)
+            else:  # running read mapping in single-end mode
+                log("Running unpaired read mapping mode")
+                self.run_read_mapping_unpaired_mode(task_params, assembly_clean, fastq, sam)
 
-        sorted_bam = self.convert_sam_to_sorted_and_indexed_bam(sam)
+            sorted_bam = self.convert_sam_to_sorted_and_indexed_bam(sam)
 
-            # sorted_bam_file_list.append(sorted_bam)
+            sorted_bam_file_list.append(sorted_bam)
 
-        # return sorted_bam_file_list
+        return sorted_bam_file_list
 
     def generate_make_coverage_table_command(self, task_params, sorted_bam_file_list):
         # create the depth file for this bam
@@ -480,7 +479,7 @@ class ConcoctUtil:
         command += '{} '.format(contig_file_path)
         command += '-c {} '.format(contig_split_size)
         command += '-o {} '.format(contig_split_overlap)
-        command += '--merge_last -b temp.bed > {}/split_contigs.fa'.format(self.CONCOCT_RESULT_DIRECTORY)
+        command += '--merge_last -b temp.bed > {}/split_contigs.fa'.format(self.BINNER_RESULT_DIRECTORY)
         log('Generated concoct_cut_up_fasta command: {}'.format(command))
 
         self._run_command(command)
@@ -491,8 +490,8 @@ class ConcoctUtil:
         """
         log("\n\nRunning generate_concoct_coverage_table_from_bam")
         command = 'python {}/scripts/concoct_coverage_table.py temp.bed '.format(self.CONCOCT_BASE_PATH)
-        command += '{}/*_sorted.bam > '.format(self.CONCOCT_RESULT_DIRECTORY)
-        command += '{}/coverage_table.tsv'.format(self.CONCOCT_RESULT_DIRECTORY)
+        command += '{}/*_sorted.bam > '.format(self.BINNER_RESULT_DIRECTORY)
+        command += '{}/coverage_table.tsv'.format(self.BINNER_RESULT_DIRECTORY)
         log('Generated concoct generate coverage table from bam command: {}'.format(command))
 
         self._run_command(command)
@@ -512,10 +511,10 @@ class ConcoctUtil:
 
         log("\n\nRunning generate_concoct_command")
         command = 'python {}/bin/concoct '.format(self.CONCOCT_BASE_PATH)
-        command += '--composition_file {}/split_contigs.fa '.format(self.CONCOCT_RESULT_DIRECTORY)
+        command += '--composition_file {}/split_contigs.fa '.format(self.BINNER_RESULT_DIRECTORY)
         command += '-l {} '.format(min_contig_length)
-        command += '-b {} '.format(self.CONCOCT_RESULT_DIRECTORY)
-        command += '--coverage_file {}/coverage_table.tsv '.format(self.CONCOCT_RESULT_DIRECTORY)
+        command += '-b {} '.format(self.BINNER_RESULT_DIRECTORY)
+        command += '--coverage_file {}/coverage_table.tsv '.format(self.BINNER_RESULT_DIRECTORY)
         command += '-t {} '.format(self.MAPPING_THREADS)
         command += '-k {} '.format(kmer_size)
         command += '-c {} '.format(max_clusters_for_vgmm)
@@ -535,8 +534,8 @@ class ConcoctUtil:
         log("\n\nRunning generate_concoct_post_clustering_merging_command")
 
         command = 'python {}/scripts/merge_cutup_clustering.py '.format(self.CONCOCT_BASE_PATH)
-        command += '{}/clustering_gt{}.csv > '.format(self.CONCOCT_RESULT_DIRECTORY, min_contig_length)
-        command += '{}/clustering_merged.csv'.format(self.CONCOCT_RESULT_DIRECTORY)
+        command += '{}/clustering_gt{}.csv > '.format(self.BINNER_RESULT_DIRECTORY, min_contig_length)
+        command += '{}/clustering_merged.csv'.format(self.BINNER_RESULT_DIRECTORY)
         log('Generated generate_concoct_post_clustering_merging command: {}'.format(command))
 
         self._run_command(command)
@@ -549,12 +548,12 @@ class ConcoctUtil:
 
         contig_file_path = task_params['contig_file_path']
 
-        bin_result_directory = self.CONCOCT_RESULT_DIRECTORY + '/' + self.CONCOCT_BIN_RESULT_DIR
+        bin_result_directory = self.BINNER_RESULT_DIRECTORY + '/' + self.BINNER_BIN_RESULT_DIR
         self._mkdir_p(bin_result_directory)
         command = 'python {}/scripts/extract_fasta_bins.py '.format(self.CONCOCT_BASE_PATH)
         command += '{} '.format(contig_file_path)
-        command += '{}/clustering_merged.csv '.format(self.CONCOCT_RESULT_DIRECTORY)
-        command += '--output_path {}/{}'.format(self.CONCOCT_RESULT_DIRECTORY, self.CONCOCT_BIN_RESULT_DIR)
+        command += '{}/clustering_merged.csv '.format(self.BINNER_RESULT_DIRECTORY)
+        command += '--output_path {}/{}'.format(self.BINNER_RESULT_DIRECTORY, self.BINNER_BIN_RESULT_DIR)
         log('Generated generate_concoct_extract_fasta_bins_command command: {}'.format(command))
 
         self._run_command(command)
@@ -564,30 +563,30 @@ class ConcoctUtil:
         generate_command: generate renamed bins
         """
         log("\n\nRunning rename_and_standardize_bin_names")
-        path_to_concoct_result_bins = os.path.abspath(self.CONCOCT_RESULT_DIRECTORY) + \
-            '/' + self.CONCOCT_BIN_RESULT_DIR + '/'
+        path_to_concoct_result_bins = os.path.abspath(self.BINNER_RESULT_DIRECTORY) + \
+            '/' + self.BINNER_BIN_RESULT_DIR + '/'
         for dirname, subdirs, files in os.walk(path_to_concoct_result_bins):
             for file in files:
                 if file.endswith('.fa'):
                     os.rename(os.path.abspath(path_to_concoct_result_bins) + '/' +
                               file, os.path.abspath(path_to_concoct_result_bins) + '/bin.' +
-                              file.split('.fa')[0].zfill(3) + '.fasta') # need to change to 4 digits
+                              file.split('.fa')[0].zfill(3) + '.fasta')  # need to change to 4 digits
 
     def make_binned_contig_summary_file_for_binning_apps(self, task_params):
         """
         generate_command: generate binned contig summary command
         """
         log("\n\nRunning make_binned_contig_summary_file_for_binning_apps")
-        path_to_concoct_result = os.path.abspath(self.CONCOCT_RESULT_DIRECTORY)
-        path_to_concoct_result_bins = '{}/{}/'.format(path_to_concoct_result, self.CONCOCT_BIN_RESULT_DIR)
+        path_to_concoct_result = os.path.abspath(self.BINNER_RESULT_DIRECTORY)
+        path_to_concoct_result_bins = '{}/{}/'.format(path_to_concoct_result, self.BINNER_BIN_RESULT_DIR)
         path_to_summary_file = path_to_concoct_result_bins + 'binned_contig.summary'
         with open(path_to_summary_file, 'w+') as f:
             f.write("Bin name\tCompleteness\tGenome size\tGC content\n")
             for dirname, subdirs, files in os.walk(path_to_concoct_result_bins):
                 for file in files:
                     if file.endswith('.fasta'):
-                        genome_bin_fna_file = os.path.join(self.CONCOCT_BIN_RESULT_DIR, file)
-                        bbstats_output_file = os.path.join(self.scratch, self.CONCOCT_RESULT_DIRECTORY,
+                        genome_bin_fna_file = os.path.join(self.BINNER_BIN_RESULT_DIR, file)
+                        bbstats_output_file = os.path.join(self.scratch, self.BINNER_RESULT_DIRECTORY,
                                                            genome_bin_fna_file).split('.fasta')[0] + ".bbstatsout"
                         bbstats_output = self.generate_stats_for_genome_bins(task_params,
                                                                              genome_bin_fna_file,
@@ -620,10 +619,10 @@ class ConcoctUtil:
                         file.endswith('.bai') or
                        file.endswith('.summary')):
                             continue
-                    if (dirname.endswith(self.CONCOCT_BIN_RESULT_DIR)):
+                    if (dirname.endswith(self.BINNER_BIN_RESULT_DIR)):
                             continue
                     zip_file.write(os.path.join(dirname, file), file)
-                if (dirname.endswith(self.CONCOCT_BIN_RESULT_DIR)):
+                if (dirname.endswith(self.BINNER_BIN_RESULT_DIR)):
                     baseDir = os.path.basename(dirname)
                     for file in files:
                         full = os.path.join(dirname, file)
@@ -781,7 +780,7 @@ class ConcoctUtil:
         task_params['reads_list_file'] = reads_list_file
 
         # prep result directory
-        result_directory = os.path.join(self.scratch, self.CONCOCT_RESULT_DIRECTORY)
+        result_directory = os.path.join(self.scratch, self.BINNER_RESULT_DIRECTORY)
         self._mkdir_p(result_directory)
 
         cwd = os.getcwd()
@@ -792,14 +791,14 @@ class ConcoctUtil:
 
         # set up tasks for kbparallel to run alignments
         # this also submits run_alignments function in parallel
-        #self.set_up_parallel_tasks(params)
+        # self.set_up_parallel_tasks(params)
 
         # run alignments, and update input contigs to use the clean file
         # this function has an internal loop to generate a sorted bam file for each input read file
+        #
+        # self.set_up_parallel_tasks(task_params)
 
-        self.set_up_parallel_tasks(task_params)
-
-        #sorted_bam_file_list = self.generate_alignment_bams(task_params, assembly_clean)
+        self.generate_alignment_bams(task_params, assembly_clean)
 
         # not used right now
         # depth_file_path = self.generate_make_coverage_table_command(task_params, sorted_bam_file_list)
@@ -834,7 +833,7 @@ class ConcoctUtil:
 
         # make new BinnedContig object and upload to KBase
         generate_binned_contig_param = {
-            'file_directory': os.path.join(result_directory, self.CONCOCT_BIN_RESULT_DIR),
+            'file_directory': os.path.join(result_directory, self.BINNER_BIN_RESULT_DIR),
             'assembly_ref': task_params['assembly_ref'],
             'binned_contig_name': task_params['binned_contig_name'],
             'workspace_name': task_params['workspace_name']
