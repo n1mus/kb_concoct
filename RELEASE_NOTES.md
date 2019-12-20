@@ -8,6 +8,11 @@ ToDo
 * Expose seed parameters (e.g. HISAT2)
 * Update documentation and inline comments
 
+
+1.3.2
+-----
+* Changed to not display binned contig output widget
+
 1.3.1
 -----
 * Added HISAT2 read aligner as mapping option
